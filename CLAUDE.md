@@ -28,9 +28,9 @@ and a resume. The site rebuilds this deck as a real, navigable website:
       drawn ovals on about, resume, and all 4 project pages — moved down to
       overlap the actual text; EMAIL/LINKEDIN on about were already correct)
 - [ ] Decide what project tags (Copywriting, Art Direction, etc.) should link to, if anything
-- [ ] Push to GitHub
-- [ ] Deployed to Netlify
-- [ ] Custom domain connected (Grace needs to buy one first)
+- [x] Push to GitHub (`gracew752-afk/gracew-portf`, authenticated via `gh auth login`)
+- [x] Deployed to Netlify (project "gracew.co", connected to GitHub for auto-deploy on push)
+- [x] Custom domain connected (`gracew.co` / `www.gracew.co`, SSL enabled via Let's Encrypt)
 
 ---
 
