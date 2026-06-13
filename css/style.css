@@ -37,6 +37,14 @@ a:hover {
   position: relative;
 }
 
+.slide-page.bg-dark {
+  background: #1a1a1a;
+}
+
+.slide-page.bg-light {
+  background: #c7c8ca;
+}
+
 .slide-page .slide-frame {
   position: relative;
   width: 100%;
