@@ -1,0 +1,143 @@
+:root {
+  --bg: #121212;
+  --pink: #f3c9dd;
+  --pink-deep: #d98fb5;
+  --cream: #f5f1ea;
+  --muted: #b9b9b9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--pink);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Homepage ---------- */
+
+.hero {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.hero .eyebrow {
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 9vw, 6rem);
+  line-height: 1;
+  margin: 0;
+  color: var(--pink);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.hero h1 span {
+  display: block;
+}
+
+.hero .subtitle {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  color: var(--cream);
+  margin-top: 0.5rem;
+}
+
+.hero .byline {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.byline strong {
+  color: var(--cream);
+}
+
+/* ---------- Slide pages (about, contents, projects, resume) ---------- */
+
+.slide-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.slide-page .slide-frame {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+}
+
+.slide-page img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------- Hotspots (clickable text already designed into the image) ---------- */
+
+.hotspot {
+  position: absolute;
+  display: block;
+}
+
+/* A hotspot that also displays an image filling its box (e.g. a
+   screenshot placed "on screen" inside a designed mockup) */
+.screen-overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+body.debug .hotspot {
+  background: rgba(255, 0, 80, 0.25);
+  border: 1px solid #ff0050;
+}
+
+body.debug .hotspot::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #ff0050;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+  padding: 0 4px;
+  white-space: nowrap;
+  font-family: monospace;
+}
+
