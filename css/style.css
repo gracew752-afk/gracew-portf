@@ -35,6 +35,7 @@ a:hover {
 
 .slide-page {
   position: relative;
+  min-height: 100vh;
 }
 
 .slide-page.bg-dark {
