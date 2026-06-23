@@ -250,7 +250,7 @@ body.debug .hotspot::after {
 
 .about-bio {
   font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(0.85rem, 1.4vw, 1rem);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
   line-height: 1.8;
   color: #f0ebe3;
   margin-bottom: 1.75rem;
@@ -304,5 +304,7 @@ body.debug .hotspot::after {
   .about-main { grid-template-columns: 1fr; }
   .about-photo-col { height: 70vw; }
   .about-text { padding: 2rem 1.25rem; }
+  .about-page { flex-direction: column; }
+  .about-footer { order: -1; padding-top: 0; }
 }
 
