@@ -6,10 +6,12 @@
   <title>Grace Williams — Creative Marketing Portfolio</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="home-page">
 
   <!-- ── Cover ─────────────────────────────────────── -->
   <section class="home-cover" id="cover"></section>
+
+  <div class="case-cue">now booking — campaigns, brand design + content</div>
 
   <!-- ── Contents ──────────────────────────────────── -->
   <section class="home-contents" id="contents">
@@ -20,53 +22,70 @@
 
     <h2 class="contents-heading">Contents</h2>
 
-    <ol class="contents-list">
+    <ol class="contents-list" id="contents-list">
       <li>
-        <a href="about.html">
+        <a href="about.html" data-preview="images/about.jpg" data-tags="bio · contact">
+          <img class="contents-thumb" src="images/about.jpg" alt="" loading="lazy">
           <span class="contents-item-name">About Me</span>
           <span class="contents-page-no">3</span>
         </a>
       </li>
       <li>
-        <a href="projects/sprite.html">
+        <a href="projects/sprite.html" data-preview="images/sprite-deck/page-01.jpg" data-tags="art direction · copywriting · video">
+          <img class="contents-thumb" src="images/sprite-deck/page-01.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Spec Sprite Marketing Campaign</span>
           <span class="contents-page-no">4</span>
         </a>
       </li>
       <li>
-        <a href="projects/glazed-craze.html">
+        <a href="projects/glazed-craze.html" data-preview="images/work/glazed-3.jpg" data-tags="brand identity · packaging">
+          <img class="contents-thumb" src="images/work/glazed-3.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Mock Donut Shop Brand</span>
           <span class="contents-page-no">5</span>
         </a>
       </li>
       <li>
-        <a href="projects/pinkcore.html">
+        <a href="projects/pinkcore.html" data-preview="images/work/pinkcore-1.jpg" data-tags="brand identity · art direction">
+          <img class="contents-thumb" src="images/work/pinkcore-1.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Mock Pilates Studio Brand</span>
           <span class="contents-page-no">6</span>
         </a>
       </li>
       <li>
-        <a href="projects/tony-rocks.html">
+        <a href="projects/tony-rocks.html" data-preview="images/work/tony-2.jpg" data-tags="web design · logo">
+          <img class="contents-thumb" src="images/work/tony-2.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Landing Page and Logo Redesign</span>
           <span class="contents-page-no">7</span>
         </a>
       </li>
       <li>
-        <a href="projects/product-styling.html">
+        <a href="projects/product-styling.html" data-preview="images/work/styling-1.jpg" data-tags="styling · photography">
+          <img class="contents-thumb" src="images/work/styling-1.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Product Shoot Styling</span>
           <span class="contents-page-no">8</span>
         </a>
       </li>
       <li>
-        <a href="resume.html">
+        <a href="resume.html" data-preview="images/resume.jpg" data-tags="experience · interests">
+          <img class="contents-thumb" src="images/resume.jpg" alt="" loading="lazy">
           <span class="contents-item-name">Experience and Interests</span>
           <span class="contents-page-no">9</span>
         </a>
       </li>
     </ol>
 
+    <div class="peek" id="peek" aria-hidden="true">
+      <img id="peek-img" src="" alt="">
+      <div class="peek-meta">
+        <span id="peek-tags"></span>
+        <span class="peek-view">view ↗</span>
+      </div>
+    </div>
+
   </section>
 
-  <script src="js/main.js"></script>
+  <button id="ninja-egg" aria-label="a suspicious cherry" title="🤫">🍒</button>
+
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>

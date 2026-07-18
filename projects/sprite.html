@@ -7,22 +7,116 @@
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body class="bg-sprite">
-  <div class="slide-page">
-    <div class="slide-frame">
-      <img src="../images/project-sprite.jpg" alt="Project 1: Sprite Who's Mid Marketing Campaign">
-      <div class="hotspot screen-overlay" style="left:55.7%; top:16.9%; width:44.2%; height:44.2%;">
-        <img src="../images/sprite-presentation-cover.jpg" alt="Sprite &quot;Who's Mid?!&quot; presentation cover slide">
+  <header class="case-hero">
+    <nav class="case-hero-nav">
+      <a class="home-pill case-pill" href="../index.html">Home</a>
+      <a class="home-pill case-pill" href="../index.html#contents">Contents</a>
+    </nav>
+
+    <h1 class="case-hero-title">
+      <span class="case-hero-green">Sprite &ldquo;Who&rsquo;s Mid?!&rdquo;</span> Marketing Campaign
+    </h1>
+
+    <div class="case-hero-grid">
+      <p class="case-hero-copy">
+        Sprite is iconic, but in a culture obsessed with what&rsquo;s new, familiar
+        classics can get dismissed as &ldquo;basic&rdquo; or &ldquo;mid.&rdquo;<br>
+        Gen&nbsp;Z loves calling things &ldquo;mid,&rdquo; but we still trust the
+        classics that always hit.<br>
+        Yeah, it&rsquo;s basic. Basically perfect.
+      </p>
+      <div class="case-hero-side">
+        <div class="case-hero-tags">
+          <span>Copywriting</span>
+          <span>Campaign Strategy</span>
+          <span>Art Direction</span>
+          <span>Social Content Concepts</span>
+        </div>
+        <p class="case-hero-format">Social-First Brand Campaign + UGC Activation</p>
       </div>
-      <a class="hotspot" data-label="VIEW PRESENTATION" href="https://www.canva.com/design/DAHKsVqpw5w/SVQftgYgmarsl_Y/view" target="_blank" rel="noopener"
-         style="left:55.7%; top:16.9%; width:44.2%; height:44.2%;"></a>
-      <a class="hotspot" data-label="WATCH COMMERCIAL" href="https://youtu.be/s-rxRy7UZus" target="_blank" rel="noopener"
-         style="left:33%; top:17%; width:18%; height:39%;"></a>
-      <a class="hotspot" data-label="HOME" href="../index.html"
-         style="left:0.5%; top:2.5%; width:13%; height:8.5%;"></a>
-      <a class="hotspot" data-label="CONTENTS" href="../index.html#contents"
-         style="left:84.5%; top:2.5%; width:14.5%; height:9%;"></a>
     </div>
-  </div>
-  <script src="../js/main.js"></script>
+
+    <div class="case-hero-display" aria-hidden="true">
+      <span class="case-script">P</span>roject 1: <span class="case-script">S</span>prite Spec
+    </div>
+  </header>
+
+  <div class="case-cue">↓ press play — the good stuff is down here ↓</div>
+
+  <section class="case-study">
+
+    <div class="case-block" id="commercial">
+      <p class="case-label">01 — THE COMMERCIAL</p>
+      <h2 class="case-heading">"Case Dismissed"</h2>
+      <p class="case-sub">The 30-second spec spot for the "Who's Mid?!" campaign — written, art directed, shot, and cut by Grace.</p>
+      <div class="case-frame">
+        <div class="case-video">
+          <iframe src="https://www.youtube-nocookie.com/embed/s-rxRy7UZus?rel=0&modestbranding=1"
+                  title="Sprite &quot;Who's Mid?!&quot; spec commercial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+      <p class="case-alt"><a href="https://youtu.be/s-rxRy7UZus" target="_blank" rel="noopener">open on youtube ↗</a></p>
+    </div>
+
+    <div class="case-strip">
+      <div><span class="case-strip-label">ROLE</span>art direction · copywriting · edit</div>
+      <div><span class="case-strip-label">FORMAT</span>30s spec spot + social-first campaign</div>
+      <div><span class="case-strip-label">FOR</span>Sprite — unofficial spec work</div>
+    </div>
+
+    <div class="case-block" id="deck">
+      <p class="case-label">02 — THE CAMPAIGN DECK</p>
+      <h2 class="case-heading">The strategy, start to finish</h2>
+      <p class="case-sub">Insight, audience, activation — flip through the full presentation right here.</p>
+      <div class="case-frame">
+        <div class="case-deckview">
+          <img id="deck-page" src="../images/sprite-deck/page-01.jpg" alt="Sprite campaign deck — page 1 of 15">
+        </div>
+      </div>
+      <div class="deck-controls">
+        <button id="deck-prev" type="button" aria-label="previous page">←</button>
+        <span id="deck-count">01 / 15</span>
+        <button id="deck-next" type="button" aria-label="next page">→</button>
+      </div>
+      <p class="case-alt"><a href="https://www.canva.com/design/DAHKsVqpw5w/SVQftgYgmarsl_Y/view" target="_blank" rel="noopener">view on canva ↗</a> <button class="cherry" data-cherry="sprite" aria-label="hidden cherry" title="?">🍒</button></p>
+    </div>
+
+    <nav class="case-nav">
+      <a href="../index.html#contents">← back to contents</a>
+      <a href="glazed-craze.html">next project →</a>
+    </nav>
+
+  </section>
+
+  <script src="../js/main.js?v=5"></script>
+  <script>
+    // Deck flipper — 15 self-hosted pages, arrow keys work too
+    (function () {
+      const TOTAL = 15;
+      let current = 1;
+      const img = document.getElementById("deck-page");
+      const count = document.getElementById("deck-count");
+
+      function pad(n) { return String(n).padStart(2, "0"); }
+
+      function show(n) {
+        current = Math.max(1, Math.min(TOTAL, n));
+        img.src = "../images/sprite-deck/page-" + pad(current) + ".jpg";
+        img.alt = "Sprite campaign deck — page " + current + " of " + TOTAL;
+        count.textContent = pad(current) + " / " + TOTAL;
+        const preload = new Image();
+        if (current < TOTAL) preload.src = "../images/sprite-deck/page-" + pad(current + 1) + ".jpg";
+      }
+
+      document.getElementById("deck-prev").onclick = () => show(current - 1);
+      document.getElementById("deck-next").onclick = () => show(current + 1);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") show(current + 1);
+        if (e.key === "ArrowLeft") show(current - 1);
+      });
+    })();
+  </script>
 </body>
 </html>

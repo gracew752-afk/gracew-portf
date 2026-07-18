@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Grace Williams</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-resume">
+
+  <header class="case-hero-nav" style="padding: 1.5rem 2rem 0;">
+    <a href="/" class="home-pill">Home</a>
+    <a href="/index.html#contents" class="home-pill">Contents</a>
+  </header>
+
+  <main class="pop-page">
+    <h1 class="pop-title">You popped off the map</h1>
+    <p class="pop-sub">this page doesn't exist — but the bubble wrap is real. go ahead.</p>
+
+    <div class="bubble-grid" id="bubble-grid" aria-label="virtual bubble wrap"></div>
+    <p class="pop-count" id="pop-count">0 / 72 popped</p>
+
+    <a class="home-pill pill-solid" href="/index.html#contents">ok back to work →</a>
+  </main>
+
+  <script>
+    (function () {
+      const TOTAL = 72;
+      const grid = document.getElementById("bubble-grid");
+      const count = document.getElementById("pop-count");
+      let popped = 0;
+
+      for (let i = 0; i < TOTAL; i++) {
+        const b = document.createElement("button");
+        b.className = "bubble";
+        b.setAttribute("aria-label", "bubble");
+        b.addEventListener("click", () => {
+          if (b.classList.contains("popped")) return;
+          b.classList.add("popped");
+          popped++;
+          count.textContent = popped + " / " + TOTAL + " popped";
+          if (popped === TOTAL) {
+            count.textContent = "all " + TOTAL + " popped. very satisfying. ✦";
+          }
+        });
+        grid.appendChild(b);
+      }
+    })();
+  </script>
+</body>
+</html>
