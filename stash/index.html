@@ -125,6 +125,26 @@
   }
   #search::placeholder{color:var(--text-3);}
 
+  /* ---------- promo / upsell bar ---------- */
+  .promo{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+    padding:10px 16px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:#fff;text-decoration:none;
+    font-size:13px;
+    border-bottom:0.5px solid rgba(0,0,0,0.06);
+    transition:filter 0.12s ease;
+  }
+  .promo:hover{filter:brightness(1.05);}
+  .promo-text{opacity:0.96;}
+  .promo-text b{font-weight:700;}
+  .promo-cta{
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.55);
+    padding:4px 13px;border-radius:999px;font-weight:700;white-space:nowrap;
+  }
+
   /* ---------- body row ---------- */
   .body-row{flex:1;display:flex;min-height:0;}
 
@@ -298,6 +318,11 @@
     </div>
   </div>
 
+  <a class="promo" href="https://gracebrandingco.gumroad.com" target="_blank" rel="noopener">
+    <span class="promo-text">You're browsing the <b>free taste</b> — the full vault has <b>200+</b> hand-picked finds.</span>
+    <span class="promo-cta">Get the full vault →</span>
+  </a>
+
   <div class="body-row">
     <aside class="sidebar" id="sidebar"></aside>
 
@@ -358,345 +383,48 @@ const CAT_EMOJI = {
   "Misc / Cool": "✨"
 };
 
-let bulkId = 1;
-function mk(title, url, category, note){
-  return { id: "b-" + (bulkId++), title, url, category, note, emoji: CAT_EMOJI[category] || "📌" };
+function mk(id, title, url, category, note){
+  return { id, title, url, category, note, emoji: CAT_EMOJI[category] || "📌" };
 }
 
-const SEED_CORE = [
-  {
-    id: "seed-1",
-    title: "Cobalt",
-    url: "https://cobalt.clxxped.lol/",
-    category: "Software & Tools",
-    note: "Free downloader for video/audio from almost any site — no watermarks, no login, no ads.",
-    emoji: "🛠️"
-  },
-  {
-    id: "seed-2",
-    title: "DaVinci Resolve",
-    url: "https://www.blackmagicdesign.com/products/davinciresolve",
-    category: "Software & Tools",
-    note: "Free professional-grade editor with Hollywood-level color grading — zero subscription.",
-    emoji: "🛠️"
-  },
-  {
-    id: "seed-3",
-    title: "Skillshop",
-    url: "https://skillshop.exceedlms.com/student/collection/1830706/path/3613144/activity/2907234",
-    category: "Learning & Courses",
-    note: "Free Google certification course — good for stacking marketing credentials.",
-    emoji: "🎓"
-  },
-  {
-    id: "seed-4",
-    title: "Pixabay",
-    url: "https://pixabay.com/",
-    category: "Free Assets",
-    note: "Free stock photos, video, and music — no attribution required.",
-    emoji: "🎨"
-  },
-  {
-    id: "seed-5",
-    title: "Incompetech",
-    url: "https://incompetech.com/music/royalty-free/music.html",
-    category: "Free Assets",
-    note: "Kevin MacLeod's massive royalty-free music library — great for edits and spec ads.",
-    emoji: "🎨"
-  }
+// FREE TEASER — a ~25-find taste of the full 200+ vault (sold on Gumroad)
+const SEED = [
+  mk("seed-1", "Unsplash", "https://unsplash.com/", "Free Assets", "Free high-res stock photos."),
+  mk("seed-2", "Pexels", "https://www.pexels.com/", "Free Assets", "Free stock photos & videos."),
+  mk("seed-3", "Texture Labs", "https://texturelabs.org/", "Free Assets", "My favorite — free high-res textures."),
+  mk("seed-4", "Humaaans", "https://www.humaaans.com/", "Free Assets", "Free customizable human illustrations."),
+
+  mk("seed-5", "Google Fonts", "https://fonts.google.com/", "Fonts", "The free font library."),
+  mk("seed-6", "FontShare", "https://www.fontshare.com/", "Fonts", "Free, genuinely gorgeous fonts."),
+  mk("seed-7", "Uncut", "https://uncut.wtf/", "Fonts", "Curated free fonts."),
+
+  mk("seed-8", "Mr Mockup", "https://mrmockup.com/free-mockups/", "Mockups", "Goated free mockup source."),
+  mk("seed-9", "Anthony Boyd", "https://www.anthonyboyd.graphics/mockups/", "Mockups", "Really good free mockups."),
+  mk("seed-10", "Unblast", "https://unblast.com/mockups/", "Mockups", "Free mockups & design resources."),
+
+  mk("seed-11", "Coolors", "https://coolors.co/", "Design Tools", "Palette generator."),
+  mk("seed-12", "Fontjoy", "https://www.fontjoy.com", "Design Tools", "Font pairing generator."),
+  mk("seed-13", "Typescale", "https://www.typescale.com", "Design Tools", "Quick type sizing tool."),
+
+  mk("seed-14", "Awwwards", "https://www.awwwards.com/", "Design Inspo", "Website design awards & inspo."),
+  mk("seed-15", "Mobbin", "https://mobbin.com", "Design Inspo", "UI/UX inspo library."),
+  mk("seed-16", "Savee It", "https://savee.it/", "Design Inspo", "Pinterest alternative."),
+  mk("seed-17", "Cosmos", "https://www.cosmos.so/", "Design Inspo", "Pinterest alternative."),
+
+  mk("seed-18", "Pentagram", "https://www.pentagram.com/", "Portfolios & Studios", "World's largest design studio."),
+  mk("seed-19", "Bestfolios", "https://www.bestfolios.com/home", "Portfolios & Studios", "Portfolio inspo."),
+
+  mk("seed-20", "Method of Action", "https://method.ac/", "Learning & Courses", "Design skill-building games."),
+  mk("seed-21", "Type Method", "https://type.method.ac/", "Learning & Courses", "Kerning type game."),
+
+  mk("seed-22", "AIGA", "https://www.aiga.org/", "Career", "American Institute of Graphic Arts."),
+  mk("seed-23", "Aquent Salary Guide", "https://aquent.com/lp/salary-guide", "Career", "Salary transparency guide."),
+
+  mk("seed-24", "DaVinci Resolve", "https://www.blackmagicdesign.com/products/davinciresolve", "Software & Tools", "Free pro-grade editor with Hollywood color grading."),
+  mk("seed-25", "Cobalt", "https://cobalt.tools/", "Software & Tools", "Free downloader for video/audio from almost any site."),
+
+  mk("seed-26", "Trademarkia", "https://www.trademarkia.com/", "Legal & Biz", "Check your logo for trademark conflicts.")
 ];
-
-const BULK = [
-  // ---- Free Assets: stock photos ----
-  mk("Unsplash", "https://unsplash.com/", "Free Assets", "Free high-res stock photos."),
-  mk("Pexels", "https://www.pexels.com/", "Free Assets", "Free stock photos & videos."),
-  mk("Stockvault", "https://www.stockvault.net/", "Free Assets", "Free stock photos, textures & graphics."),
-  mk("Rawpixel", "https://www.rawpixel.com", "Free Assets", "Free + paid stock photos and design assets."),
-  mk("Rawpixel Public Domain", "https://www.rawpixel.com/public-domain", "Free Assets", "Public domain vintage art & photos."),
-  mk("Openverse", "https://openverse.org/", "Free Assets", "Openly licensed image & audio search engine."),
-  mk("Vecteezy", "https://www.vecteezy.com/", "Free Assets", "Free vectors, stock photos & videos."),
-  // ---- Free Assets: textures ----
-  mk("Texture Labs", "https://texturelabs.org/", "Free Assets", "Your favorite — free high-res textures."),
-  mk("Texture Ninja", "https://texture.ninja/", "Free Assets", "Free textures."),
-  mk("Texture Lib", "http://texturelib.com/", "Free Assets", "Free texture library."),
-  mk("Lost and Taken", "https://lostandtaken.com/", "Free Assets", "Free textures & design resources."),
-  mk("Texture Fabrik", "https://www.texturefabrik.com", "Free Assets", "Textures & design resources."),
-  mk("Free Paper Texture", "https://free-paper-texture.com/", "Free Assets", "Free paper textures."),
-  mk("Resource Boy — Textures", "https://resourceboy.com/textures/", "Free Assets", "Free assorted textures."),
-  // ---- Free Assets: archives & misc photos ----
-  mk("The Met Collection", "https://www.metmuseum.org/art/collection", "Free Assets", "Public art & painting archive — double check usage rights."),
-  mk("Internet Archive", "https://archive.org/", "Free Assets", "Massive open archive of media & documents."),
-  mk("Smithsonian Institution", "https://siarchives.si.edu/collections", "Free Assets", "Archive collections — double check usage rights."),
-  mk("NASA Image Library", "https://images.nasa.gov/", "Free Assets", "Free NASA imagery."),
-  mk("NYPL Digital Collections", "https://digitalcollections.nypl.org/", "Free Assets", "Public-domain-leaning archive."),
-  mk("Getty", "https://www.getty.edu/", "Free Assets", "Art collection — double check usage rights."),
-  mk("Harvard Digital Collections", "https://library.harvard.edu/digital-collections", "Free Assets", "Digitized archive."),
-  mk("Library of Congress", "https://www.loc.gov/", "Free Assets", "Public archive."),
-  mk("Wikimedia Commons", "https://commons.wikimedia.org/wiki/Category:Images", "Free Assets", "Openly licensed images."),
-  mk("British Library (Flickr)", "https://www.flickr.com/photos/britishlibrary/albums", "Free Assets", "Archival image albums."),
-  mk("Public Work by Cosmos", "https://public.work/", "Free Assets", "Curated public domain image archive."),
-  mk("CSA Images", "https://www.csaimages.com/index.asp", "Free Assets", "Retro-style stock illustration."),
-  // ---- Free Assets: illustrations & icons ----
-  mk("Humaaans", "https://www.humaaans.com/", "Free Assets", "Free customizable human illustrations."),
-  mk("Open Doodles", "https://www.opendoodles.com/", "Free Assets", "Free hand-drawn illustration set."),
-  mk("Whirrls", "https://www.whirrls.com/", "Free Assets", "Illustration & doodle collection."),
-  mk("Noun Project", "https://thenounproject.com/", "Free Assets", "Free icons & stock photos."),
-  mk("Google Icons", "https://fonts.google.com/icons", "Free Assets", "Free icon set."),
-  mk("Simple Icons", "https://simpleicons.org/", "Free Assets", "HD brand/logo icons (Apple, Spotify, etc)."),
-  mk("3D Icons", "https://3dicons.co/", "Free Assets", "Free 3D icon pack."),
-  mk("UI Hut Icons", "https://uihut.com/icons", "Free Assets", "Free UI icons."),
-  // ---- Free Assets: asset sites / marketplaces ----
-  mk("Creative Market", "https://creativemarket.com/", "Free Assets", "$$ Design asset marketplace (fonts, mockups, graphics)."),
-  mk("Blkmarket", "https://blkmarket.com/", "Free Assets", "Photoshop resources."),
-  mk("Brusheezy", "https://www.brusheezy.com/", "Free Assets", "Free brushes, patterns & textures."),
-  mk("Craftwork", "https://craftwork.design/", "Free Assets", "Design resources & freebies."),
-  mk("Graphic Burger", "https://graphicburger.com/", "Free Assets", "Free mockups & UI resources."),
-  mk("Pinspiry", "https://pinspiry.com/", "Free Assets", "Free design resources."),
-  mk("Indieground", "https://indieground.net/", "Free Assets", "Free & premium design resources."),
-  mk("Resource Boy", "https://resourceboy.com", "Free Assets", "Huge hub of free design resources."),
-  mk("Free Text Effects", "https://resourceboy.com/text-effects/", "Free Assets", "Free Photoshop text effects."),
-  mk("Wave Index", "https://www.waveindex.com/", "Free Assets", "Wave/gradient graphic resources."),
-  mk("Design Syndrome", "https://designsyndrome.gumroad.com/", "Free Assets", "Design freebies on Gumroad."),
-
-  // ---- Mockups: free ----
-  mk("Mr Mockup (free)", "https://mrmockup.com/free-mockups/", "Mockups", "Goated free mockup source."),
-  mk("Anthony Boyd", "https://www.anthonyboyd.graphics/mockups/", "Mockups", "Really good free mockups."),
-  mk("LS GFX", "https://www.ls.graphics/free-mockup", "Mockups", "Free mockups."),
-  mk("Mockups Design", "https://mockups-design.com/", "Mockups", "Free mockups."),
-  mk("Graphberry", "https://www.graphberry.com/", "Mockups", "Free mockups & resources."),
-  mk("MockupFree", "https://mockupfree.co/", "Mockups", "Free mockup hub."),
-  mk("Mockup World", "https://www.mockupworld.co/", "Mockups", "Free mockup hub."),
-  mk("Resource Boy — Mockups", "https://resourceboy.com/mockups/", "Mockups", "Free mockups directory."),
-  mk("Yellow Images (free)", "https://yellowimages.com/mockups/category/free-mockups", "Mockups", "Free mockup category."),
-  mk("Mocku", "https://www.hellomocku.com/freebies/", "Mockups", "Free mockups."),
-  mk("Unblast", "https://unblast.com/mockups/", "Mockups", "Free mockups & design resources."),
-  mk("Fruited Mockups", "https://fruited-design.com/free_mockup", "Mockups", "Free mockups."),
-  // ---- Mockups: paid ----
-  mk("Mr Mockup (street/signage)", "https://mrmockup.com/", "Mockups", "$$ Street/signage mockups."),
-  mk("Circular", "https://www.madebycircular.com.au/", "Mockups", "$$ Mockups."),
-  mk("Fockups", "https://fockups.com/", "Mockups", "$$ Purposely 'focked up' realistic mockups."),
-  mk("Showcase", "https://showcasebh.com/", "Mockups", "$$ Mockups."),
-  mk("LS Graphics", "https://www.ls.graphics/", "Mockups", "$$ UI/UX mockups."),
-  mk("Creatoom", "https://creatoom.com/", "Mockups", "$$ Mockups."),
-  mk("Hazard Mockups", "https://www.hazardmockups.com/mockups", "Mockups", "$$ Mockups."),
-  mk("The Mockups", "https://the-mockups.com/", "Mockups", "$$ Mockups."),
-  mk("Micro Volume", "https://microvolume.gumroad.com/", "Mockups", "$$ Mockups on Gumroad."),
-  mk("Wannathisone", "https://wannathis.one/mockups", "Mockups", "$$ Mockups."),
-  mk("Mockup Maison", "https://mockup.maison/collections/all-mockups", "Mockups", "$$ Contemporary mockups."),
-  mk("Bendito", "https://benditomockup.com/shop", "Mockups", "$$ Mockups."),
-
-  // ---- Fonts: free ----
-  mk("Google Fonts", "https://fonts.google.com/", "Fonts", "Free font library."),
-  mk("Urban Fonts", "https://www.urbanfonts.com/", "Fonts", "Free fonts."),
-  mk("Font Squirrel", "https://www.fontsquirrel.com/", "Fonts", "Free commercial-use fonts."),
-  mk("DaFont", "https://www.dafont.com/", "Fonts", "Free fonts — check licenses."),
-  mk("Dirtyline Studio", "https://dirtylinestudio.com/freebies/", "Fonts", "Curated free fonts."),
-  mk("Uncut", "https://uncut.wtf/", "Fonts", "Curated free fonts."),
-  mk("Font Fabric", "https://www.fontfabric.com/free-fonts/", "Fonts", "Free fonts."),
-  mk("FontShare", "https://www.fontshare.com/", "Fonts", "Free high-quality fonts."),
-  mk("Velvetyne", "https://velvetyne.fr", "Fonts", "Free experimental fonts."),
-  mk("Collletttivo", "https://www.collletttivo.it/", "Fonts", "Free fonts."),
-  mk("Open Foundry", "https://open-foundry.com/fonts", "Fonts", "Free foundry fonts."),
-  mk("The League of Moveable Type", "https://www.theleagueofmoveabletype.com", "Fonts", "Free open-source fonts."),
-  mk("Xcicero", "http://xcicero.esad-gv.net/", "Fonts", "Free experimental type."),
-  mk("Free Faces", "https://www.freefaces.gallery/", "Fonts", "Curated free font gallery."),
-  // ---- Fonts: paid ----
-  mk("Myfonts", "https://www.myfonts.com/", "Fonts", "$$ Font marketplace."),
-  mk("Adobe Fonts", "https://fonts.adobe.com/", "Fonts", "Included w/ Creative Cloud subscription."),
-  mk("Font Brief", "https://www.fontbrief.com/fontbrief", "Fonts", "$$ Curated font picks."),
-  mk("The Designers Foundry", "https://www.thedesignersfoundry.com/", "Fonts", "$$ Fonts."),
-  mk("V Type", "https://v-fonts.com/", "Fonts", "Find/test/buy variable fonts."),
-  mk("Type One", "https://t1-foundry.com/", "Fonts", "$$ Foundry."),
-  mk("Displaay Type", "https://displaay.net/typefaces/retail/", "Fonts", "$$ Foundry."),
-  mk("Type Department", "https://type-department.com/", "Fonts", "$$ Foundry."),
-  mk("Grilli Type", "https://www.grillitype.com/", "Fonts", "$$ Foundry."),
-  mk("Studio Feixen", "https://fonts.studiofeixen.ch/", "Fonts", "$$ Foundry."),
-  mk("Madebyste", "https://madebyste.com/", "Fonts", "$$ Vogue-like foundry."),
-  mk("KlimType Foundry", "https://klim.co.nz/retail-fonts/", "Fonts", "$$ Foundry."),
-  mk("Lineto", "https://lineto.com/typefaces", "Fonts", "$$ Foundry, known for 'Prisma.'"),
-  mk("Faire Type", "https://www.fairetype.com", "Fonts", "$$ Foundry."),
-
-  // ---- Design Tools ----
-  mk("Typescale", "https://www.typescale.com", "Design Tools", "Quick type sizing tool."),
-  mk("Typogram Studio", "https://typogram.co/studio/", "Design Tools", "Type layout tool."),
-  mk("Fontjoy", "https://www.fontjoy.com", "Design Tools", "Font pairing generator."),
-  mk("Font Base", "https://fontba.se/", "Design Tools", "Your favorite font manager."),
-  mk("FontStruct", "https://fontstruct.com/", "Design Tools", "Bitmap font maker."),
-  mk("Glyphs", "https://glyphsapp.com/", "Design Tools", "Font creation (Mac)."),
-  mk("FontForge", "https://fontforge.org/en-US/", "Design Tools", "Font creation (Windows)."),
-  mk("Hyperglot", "https://hyperglot.rosettatype.com/", "Design Tools", "Language compatibility checker."),
-  mk("TypeRip", "https://badnoise.net/TypeRip/", "Design Tools", "'Borrows' Adobe fonts — use at own risk."),
-  mk("Color Palette Contrast Builder", "https://toolness.github.io/accessible-color-matrix/", "Design Tools", "Contrast matrix builder."),
-  mk("Color Contrast Checker", "https://webaim.org/resources/contrast", "Design Tools", "Accessibility contrast checker."),
-  mk("Coolors", "https://coolors.co/", "Design Tools", "Palette generator."),
-  mk("Color Mind", "http://colormind.io/", "Design Tools", "Palette generator."),
-  mk("UI Gradients", "https://uigradients.com/", "Design Tools", "Gradient library."),
-  mk("Hue Tools", "https://hue.tools/", "Design Tools", "Thousands of color names."),
-  mk("W3C Standards", "https://www.w3.org/WAI/standards-guidelines/", "Design Tools", "Accessibility standards."),
-  mk("NTSCqt", "https://github.com/JargeZ/ntscqt/releases", "Design Tools", "VHS effect emulator."),
-  mk("Standards", "https://standards.site/", "Design Tools", "Host online brand guidelines."),
-  mk("Milan Note", "https://milanote.com/", "Design Tools", "Collaborative notes & moodboards."),
-  mk("Mark Up IO", "https://www.markup.io/", "Design Tools", "Collaborate with web developers."),
-  mk("Invision", "https://www.invisionapp.com/", "Design Tools", "UI/UX collaboration space."),
-  mk("Wave Apps", "https://www.waveapps.com/", "Design Tools", "Free invoicing (Apple Pay, credit card)."),
-  mk("Good Brief", "https://goodbrief.io", "Design Tools", "Generate project briefs."),
-  mk("Gestalt Principles", "https://www.gestaltprinciples.com/", "Design Tools", "Design principles reference."),
-  mk("Nu School Pricing Calc", "https://thenuschool.com/how-much/#/start", "Design Tools", "Freelance pricing calculator."),
-  mk("The Futur — Free Resources", "https://www.thefutur.com/free-resources", "Design Tools", "Meeting questions, templates, etc."),
-  mk("Checklist", "https://www.checklist.design/", "Design Tools", "Design best-practices checklist."),
-  mk("Frame0", "https://frame0.app/", "Design Tools", "Make UI wireframes look nice."),
-  mk("MailTo Link Maker", "https://mailtolink.me/", "Design Tools", "Generate mailto links."),
-
-  // ---- Legal & Biz ----
-  mk("Global Brand Database", "https://branddb.wipo.int/en/similarlogo", "Legal & Biz", "Trademark checker."),
-  mk("Trademarkia", "https://www.trademarkia.com/", "Legal & Biz", "Check your logo for trademark conflicts."),
-  mk("Signaturely", "https://signaturely.com/", "Legal & Biz", "Free freelance contract template."),
-  mk("AIGA Contract Template", "https://www.aiga.org", "Legal & Biz", "Standard contract templates."),
-
-  // ---- Career ----
-  mk("AIGA", "https://www.aiga.org/", "Career", "American Institute of Graphic Arts."),
-  mk("AAF", "https://www.aaf.org/", "Career", "American Advertising Federation."),
-  mk("RGD", "https://rgd.ca/", "Career", "Registered Graphic Designers (Canada)."),
-  mk("Aquent Salary Guide", "https://aquent.com/lp/salary-guide", "Career", "Salary transparency guide."),
-  mk("The Jungle", "https://www.welcometothejungle.com/en", "Career", "Job search (mostly UK)."),
-  mk("Creative Access", "https://opportunities.creativeaccess.org.uk/", "Career", "UK-based creative job listings."),
-  mk("If You Could", "https://www.ifyoucouldjobs.com/", "Career", "Creative job board."),
-  mk("The Dots", "https://the-dots.com/", "Career", "Networking events & job listings."),
-  mk("Run The Check", "https://www.runthecheck.com/", "Career", "Job listings."),
-  mk("UAL Creative Opportunities", "https://creativeopportunities.arts.ac.uk/", "Career", "Internship listings."),
-
-  // ---- Learning & Courses ----
-  mk("Method of Action", "https://method.ac/", "Learning & Courses", "Design skill-building games."),
-  mk("Type Method", "https://type.method.ac/", "Learning & Courses", "Kerning type game."),
-  mk("Shape Method", "https://shape.method.ac/", "Learning & Courses", "Shape type game."),
-  mk("Space Type", "https://spacetypegenerator.com/", "Learning & Courses", "Type spacing game."),
-  mk("Agency Process (Medium)", "https://medium.com/smith-diction/trust-the-process-97ac8999d56a", "Learning & Courses", "Breakdown of how an agency actually works."),
-  mk("Creative Lives in Progress", "https://www.creativelivesinprogress.com/", "Learning & Courses", "Career insight interviews."),
-  mk("Jesse Nyberg (YouTube)", "https://www.youtube.com/@JesseNyberg", "Learning & Courses", "Freelance insights."),
-  mk("Ricardo Perez (YouTube)", "https://www.youtube.com/@rahpstudio", "Learning & Courses", "UI/UX designer at Google."),
-  mk("Texturelabs (YouTube)", "https://www.youtube.com/@Texturelabs", "Learning & Courses", "Photoshop & motion tutorials."),
-
-  // ---- Design Inspo: general / multi-discipline ----
-  mk("Abduzeedo", "https://abduzeedo.com/", "Design Inspo", "Branding inspo & more."),
-  mk("Design Week", "https://www.designweek.co.uk/", "Design Inspo", "Design & art articles."),
-  mk("Graphic Mama Blog", "https://graphicmama.com/blog/", "Design Inspo", "Design blog."),
-  mk("Fuse Kiwi", "https://www.fuse.kiwi/", "Design Inspo", "All-mediums inspo."),
-  mk("Muzli", "https://muz.li/", "Design Inspo", "Daily inspo Chrome extension."),
-  mk("Savee It", "https://savee.it/", "Design Inspo", "Pinterest alternative."),
-  mk("Cosmos", "https://www.cosmos.so/", "Design Inspo", "Pinterest alternative."),
-  mk("Film AI", "https://beta.flim.ai/", "Design Inspo", "Find movie stills & color palettes."),
-  mk("Bestfolios", "https://www.bestfolios.com/home", "Design Inspo", "Portfolio inspo."),
-  mk("Prettyfolio", "https://www.prettyfolio.com", "Design Inspo", "Curated portfolios."),
-  // ---- Design Inspo: branding & typography ----
-  mk("Fonts in Use", "https://fontsinuse.com/", "Design Inspo", "Real-world type usage."),
-  mk("Brand New", "https://www.underconsideration.com/brandnew/", "Design Inspo", "Branding news."),
-  mk("Rebrand Gallery", "https://www.rebrand.gallery/", "Design Inspo", "Visual identity inspo."),
-  mk("Index", "https://theindex.website/", "Design Inspo", "Curated online gallery."),
-  mk("Daily Branding", "https://www.dailybranding.co/", "Design Inspo", "Branding inspo feed."),
-  mk("Die Line", "https://thedieline.com/", "Design Inspo", "Print & packaging design."),
-  mk("Packaging of the World", "https://packagingoftheworld.com/", "Design Inspo", "Packaging design inspo."),
-  mk("Another Graphic", "https://anothergraphic.org/", "Design Inspo", "Anti-design / typographic inspo."),
-  mk("Political Designs", "https://www.politicsanddesign.com", "Design Inspo", "Political logo archive."),
-  mk("Branding Style Guides", "https://brandingstyleguides.com/", "Design Inspo", "Real brand guideline examples (McDonald's, Coke, etc)."),
-  // ---- Design Inspo: historic ----
-  mk("People's Graphic Design Archive", "https://peoplesgdarchive.org/", "Design Inspo", "Historic design archive."),
-  mk("AIGA Design Archive", "https://designarchives.aiga.org/#/home", "Design Inspo", "Historic AIGA archive."),
-  mk("Typehunting", "https://typehunting.com/", "Design Inspo", "Vintage typography."),
-  mk("Letterform Online Archive", "https://oa.letterformarchive.org/", "Design Inspo", "Historic type archive."),
-  mk("Saul Bass — AT&T Logo Pitch", "https://www.youtube.com/watch?v=xKu2de0yCJI", "Design Inspo", "Saul Bass's live AT&T logo pitch."),
-  // ---- Design Inspo: UI/UX ----
-  mk("Awwwards", "https://www.awwwards.com/", "Design Inspo", "Website design awards & inspo."),
-  mk("Maxi Best Of", "https://maxibestof.one/", "Design Inspo", "See what tech built a site."),
-  mk("Website Inspo", "https://www.webspo.io", "Design Inspo", "UI/UX inspo."),
-  mk("Cargo", "https://cargo.site/", "Design Inspo", "Contemporary site builder + inspo."),
-  mk("Site Inspire", "https://www.siteinspire.com/", "Design Inspo", "Website inspo."),
-  mk("Cofolios", "https://www.cofolios.com/", "Design Inspo", "Portfolios from big-tech designers."),
-  mk("Godly", "https://godly.website/", "Design Inspo", "Website inspo."),
-  mk("Brutalist Websites", "https://brutalistwebsites.com/", "Design Inspo", "Brutalist web design inspo."),
-  mk("Design Modo", "https://designmodo.com/website/", "Design Inspo", "Web design articles."),
-  mk("Landing Pages Explained", "https://landingpagesexplained.com/", "Design Inspo", "Landing page breakdowns."),
-  mk("Codrops", "https://tympanus.net/codrops/category/playground/", "Design Inspo", "Shows code behind the scenes."),
-  mk("UX Tools", "https://uxtools.co/", "Design Inspo", "Resources for product designers."),
-  mk("Design Spells", "https://www.designspells.com/", "Design Inspo", "Micro-interaction inspo."),
-  mk("Humane by Design", "https://humanebydesign.com/", "Design Inspo", "Ethical design principles."),
-  mk("Apple Design Resources", "https://developer.apple.com/design/resources/", "Design Inspo", "Official Apple design kits."),
-  mk("A/B Test Design", "https://abtest.design/", "Design Inspo", "Real A/B test results from real apps."),
-  mk("Mobbin", "https://mobbin.com", "Design Inspo", "UI/UX inspo library."),
-  mk("Curated Design", "https://www.curated.design/", "Design Inspo", "Curated best websites."),
-  mk("Apple Design Awards", "https://developer.apple.com/design/awards/", "Design Inspo", "Apple's design award winners."),
-  mk("Design Principles", "https://principles.design/", "Design Inspo", "Design principles wiki."),
-  mk("Design Systems", "https://www.designsystems.com/sections/getting-started/", "Design Inspo", "Design systems reference."),
-
-  // ---- Portfolios & Studios: personal portfolios ----
-  mk("Lauren Hom", "https://www.homsweethom.com/work", "Portfolios & Studios", "Lettering artist."),
-  mk("Dana Tanamachi", "http://www.tanamachistudio.com/", "Portfolios & Studios", "Public space designer."),
-  mk("Georgia Lupi", "http://giorgialupi.com/", "Portfolios & Studios", "Info designer at Pentagram."),
-  mk("Guido Galina Cumar", "https://www.behance.net/guidogalinacumar", "Portfolios & Studios", "Crazy illustration."),
-  mk("Tyler Spangler", "https://tylerspangler.com/", "Portfolios & Studios", "Color pop illustration."),
-  mk("Daniel Frumhoff", "https://www.danielfrumhoff.com", "Portfolios & Studios", "Art director for Apple."),
-  mk("Huy Phan", "https://huyml.co/", "Portfolios & Studios", "Really nice site."),
-  mk("Evelyn Luu", "https://eluu.design/", "Portfolios & Studios", "Really cool print design."),
-  mk("Eugene Hyun", "https://www.ehyun.design/", "Portfolios & Studios", "Motion graphics."),
-  mk("Hanson Ma", "https://hansonma.org/", "Portfolios & Studios", "Really cool packaging design."),
-  mk("Michael Wang", "https://www.michaelwang.design/", "Portfolios & Studios", "3D motion designer."),
-  mk("Nicholas Sheehan", "https://nicholasc2.com/", "Portfolios & Studios", "Cool contemporary stuff."),
-  mk("Timothy Goodman", "https://www.tgoodman.com/", "Portfolios & Studios", "Keith Haring-style illustration."),
-  mk("Nuria Boj", "https://www.nuriaboj.co.uk/", "Portfolios & Studios", "Illustration & animation."),
-  mk("Elijah Vary", "https://elijahvary.com/mixedmedia", "Portfolios & Studios", "Really cool collage stuff."),
-  mk("Edward Sun", "https://www.edwardcreates.com/", "Portfolios & Studios", "Portfolio."),
-  mk("Nick Faucher", "https://nickfaucher.myportfolio.com", "Portfolios & Studios", "Portfolio."),
-  mk("An Bui", "https://www.anbui.co/", "Portfolios & Studios", "Very clean website & motion work."),
-  mk("Jessica Hische", "https://jessicahische.is/", "Portfolios & Studios", "Lettering artist."),
-  mk("Martina Flor", "https://www.martinaflor.com/", "Portfolios & Studios", "Hand lettering."),
-  mk("Adam Guzman", "https://adamguzman.com/", "Portfolios & Studios", "Shoes / clothing design."),
-  mk("Matt Singleton", "https://www.mattsingleton.xyz/", "Portfolios & Studios", "Motion UI/UX."),
-  mk("Claire Coullon", "http://www.coullon.com/index.html", "Portfolios & Studios", "Handwritten type."),
-  mk("Stefan Vitasovic", "https://stefanvitasovic.dev/", "Portfolios & Studios", "Front-end dev — nice process breakdowns."),
-  mk("Udayraj Sathe", "https://www.udayrajsathe.com/", "Portfolios & Studios", "Great UX case studies."),
-  mk("Noah Mooney", "https://noahmooney.co/about", "Portfolios & Studios", "Portfolio."),
-  mk("Enrico Ferreria", "https://enricosf.com/", "Portfolios & Studios", "Portfolio."),
-  mk("Ashia D. Shelton", "https://www.ashiadshelton.com/", "Portfolios & Studios", "Portfolio."),
-  mk("Kevin Paz", "https://www.kevinpaz.me/", "Portfolios & Studios", "UI/UX designer."),
-  mk("Twisha Patni", "https://www.twishapatni.com/", "Portfolios & Studios", "Portfolio."),
-  mk("Tomasz", "https://womasz.org/", "Portfolios & Studios", "Sick collage / illustration."),
-  mk("Pol Buch", "https://polbuch.cargo.site/", "Portfolios & Studios", "Portfolio."),
-  mk("Sebastian", "https://sebastianthecreative.com/", "Portfolios & Studios", "Senior designer at a D.C. agency."),
-  mk("Jiacheng Yang", "https://www.jyang.io", "Portfolios & Studios", "Designer at Apple."),
-  mk("Michelle Gore", "https://www.michellegore.com", "Portfolios & Studios", "Designer at Apple."),
-  mk("Adrian Zumbrunnen", "https://www.azumbrunnen.me", "Portfolios & Studios", "Designer at Apple."),
-  mk("Eric Jordan", "https://www.ericjordan.design", "Portfolios & Studios", "Designer at Apple."),
-  // ---- Portfolios & Studios: design studios ----
-  mk("Pentagram", "https://www.pentagram.com/", "Portfolios & Studios", "World's largest design studio."),
-  mk("Design Studio", "https://design.studio/", "Portfolios & Studios", "Design studio."),
-  mk("Studio fnt", "https://studiofnt.com/Projects", "Portfolios & Studios", "Cool public space design."),
-  mk("Hoodzpah Design", "https://hoodzpahdesign.com/", "Portfolios & Studios", "Design studio."),
-  mk("We Are In House", "https://weareinhouse.com/", "Portfolios & Studios", "Design studio."),
-  mk("Grow", "https://thisisgrow.com/", "Portfolios & Studios", "Design studio."),
-  mk("How & How", "https://how.studio/", "Portfolios & Studios", "Design & branding studio."),
-  mk("Studio Moross", "https://www.studiomoross.com/", "Portfolios & Studios", "Music industry design studio."),
-  mk("Mucho", "https://wearemucho.com/", "Portfolios & Studios", "Brand design studio."),
-  mk("Everyday Practice", "http://everyday-practice.com/", "Portfolios & Studios", "Korean design studio."),
-  mk("Brethren", "https://www.brethrendesignco.com", "Portfolios & Studios", "Beer & music industry design."),
-  mk("Out of Place", "https://outofplace.studio/", "Portfolios & Studios", "Branding studio."),
-  mk("fatfish", "https://fatfish.ca/en/", "Portfolios & Studios", "Web dev agency."),
-  mk("Zajno", "https://zajno.com/", "Portfolios & Studios", "Digital design studio."),
-  mk("hellohello", "https://www.hellohello.is/", "Portfolios & Studios", "Web design & dev studio."),
-  mk("Duckpin", "https://www.rollwithduckpin.com/", "Portfolios & Studios", "Design studio."),
-  mk("Dinger", "https://www.dingercreative.com/", "Portfolios & Studios", "Design studio."),
-  mk("EightySeven", "https://www.madebyeightyseven.com/work", "Portfolios & Studios", "Design studio."),
-  mk("Sydopia", "https://sydopia.com/", "Portfolios & Studios", "Design studio."),
-  mk("Column Five", "https://www.columnfivemedia.com/", "Portfolios & Studios", "Design studio."),
-  mk("Gensler", "https://www.gensler.com/", "Portfolios & Studios", "Environmental / architecture design."),
-  mk("Gable", "https://gablecompany.com/", "Portfolios & Studios", "Environmental design studio."),
-  // ---- Portfolios & Studios: advertising agencies ----
-  mk("Alma", "https://www.almaad.com", "Portfolios & Studios", "Really cool Pepsi work."),
-  mk("Razorfish", "https://www.razorfish.com/", "Portfolios & Studios", "Advertising agency — great Cadillac car ad."),
-  mk("Lola MullenLowe", "https://lola-mullenlowe.com/", "Portfolios & Studios", "Advertising agency, commercials."),
-  mk("Merkley + Partners", "https://www.merkleyandpartners.com/", "Portfolios & Studios", "Snoop Dogg Bic ad.")
-];
-
-const SEED = [...SEED_CORE, ...BULK];
-
 let resources = [];
 let activeFilter = 'All';
 
