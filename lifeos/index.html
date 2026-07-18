@@ -1564,9 +1564,138 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--rose-border); border-radius: 10px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* -------------------------------------------------------------
+           MORNING INTRO (first open of the day)
+           ------------------------------------------------------------- */
+        #morning-intro {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: var(--bg-cream);
+            background-image: radial-gradient(rgba(168, 34, 30, 0.06) 1px, transparent 1px);
+            background-size: 22px 22px;
+        }
+        #morning-intro.show { display: flex; animation: miIn 0.5s ease both; }
+        #morning-intro.hide { animation: miOut 0.6s ease forwards; }
+        .mi-sun {
+            font-size: 58px;
+            animation: miSun 0.9s cubic-bezier(0.16, 1, 0.3, 1) both, miFloat 3.4s ease-in-out 0.9s infinite;
+        }
+        .mi-small {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 0.22em;
+            color: var(--text-muted);
+            margin-top: 20px;
+            opacity: 0;
+            animation: miUp 0.6s ease 0.35s both;
+        }
+        .mi-name {
+            font-size: clamp(46px, 12vw, 88px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            color: var(--cherry-red);
+            margin: 6px 0 16px;
+            opacity: 0;
+            animation: miUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+        }
+        .mi-go {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-main);
+            opacity: 0;
+            animation: miUp 0.6s ease 1.15s both;
+        }
+        .mi-skip {
+            position: absolute;
+            bottom: 42px;
+            left: 0; right: 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--text-ghost);
+            opacity: 0;
+            animation: miUp 0.6s ease 1.9s both;
+        }
+        @keyframes miIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes miOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes miUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes miSun { 0% { opacity: 0; transform: scale(0.3) rotate(-45deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+        @keyframes miFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+        /* -------------------------------------------------------------
+           MOBILE + TABLET / TOUCH: flatten the desktop-window metaphor
+           (narrow screens OR any touch device — iPhone + iPad, any orientation)
+           ------------------------------------------------------------- */
+        @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+            html, body { overflow-x: hidden; max-width: 100vw; }
+            header { padding: 0 12px; }
+            .menu-words, .nav-shortcuts-hint { display: none; }
+
+            .desktop {
+                min-width: 0;           /* stop the flex item growing to content width */
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 88px;   /* clear the floating dock */
+            }
+            .desktop::before { display: none; }
+
+            /* windows become full-width, stacked, non-draggable cards.
+               Widths are viewport-based (vw) — the flex containing-block chain
+               mis-resolves % here, so vw is the reliable anchor to the screen. */
+            .view-pane.open, .view-pane.maxed {
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                width: calc(100vw - 24px) !important;
+                max-width: calc(100vw - 24px) !important;
+                height: auto !important;
+                max-height: none !important;
+                box-sizing: border-box;
+                margin: 12px auto;
+                box-shadow: 4px 4px 0 rgba(30, 28, 25, 0.10);
+                border-radius: 12px;
+            }
+            .window-body { overflow-x: hidden; }
+            /* nothing inside a card may exceed it, except the timeline (scrolls itself) */
+            .window-body > *:not(.time-grid) { max-width: 100%; }
+            .time-grid { overflow-x: auto; }
+            .window-titlebar { cursor: default; }
+            .window-title { margin-right: 0; }
+            .window-body { padding: 20px 18px; }
+
+            /* dock sized to fit a phone, no hover-lift on touch */
+            .dock { gap: 2px; padding: 7px 8px; bottom: 10px; border-radius: 16px; }
+            .dock-btn { width: 40px; height: 40px; font-size: 22px; }
+            .dock-btn:hover { transform: none; }
+
+            .li-ring-wrap { width: 178px; }
+            .li-toast { right: 50%; transform: translateX(50%); bottom: 92px; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="morning-intro" aria-hidden="true">
+        <div>
+            <div class="mi-sun">☀️</div>
+            <div class="mi-small">good morning,</div>
+            <h1 class="mi-name">Gracie girl</h1>
+            <div class="mi-go">let's get started</div>
+        </div>
+        <div class="mi-skip">tap anywhere to skip</div>
+    </div>
 
     <header>
         <div class="system-meta">
@@ -1956,6 +2085,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            initMorningIntro();
             initDesktop();
             initClockAndDate();
             initInbox();
@@ -1976,6 +2106,25 @@
                 updateTimelineEngine();
             }, 1000);
         });
+
+        function initMorningIntro() {
+            const el = document.getElementById('morning-intro');
+            if (!el) return;
+            const today = new Date().toDateString();
+            if (localStorage.getItem('grace_os_last_morning') === today) return; // already greeted today
+            localStorage.setItem('grace_os_last_morning', today);
+
+            let dismissed = false;
+            const dismiss = () => {
+                if (dismissed) return;
+                dismissed = true;
+                el.classList.add('hide');
+                setTimeout(() => { el.style.display = 'none'; el.classList.remove('show', 'hide'); }, 650);
+            };
+            el.classList.add('show');
+            el.addEventListener('click', dismiss);
+            setTimeout(dismiss, 3800);
+        }
 
         function initClockAndDate() {
             const dateEl = document.getElementById('timeline-date');
