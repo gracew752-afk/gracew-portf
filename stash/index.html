@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>THE STASH</title>
+<meta name="description" content="THE STASH — a curated vault of 200+ free tools, assets, fonts, mockups & design resources, hand-picked by Grace Williams.">
+<meta name="theme-color" content="#ff3b8d">
+<meta property="og:title" content="THE STASH">
+<meta property="og:description" content="200+ hand-picked free tools, assets & design resources.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gracew.co/stash">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --accent:#ff3b8d;
@@ -171,8 +179,16 @@
     border-bottom:0.5px solid var(--hairline);
   }
   .content-head h2{margin:0;font-size:19px;font-weight:700;letter-spacing:-0.01em;}
+  .head-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .tool-btn{
+    background:var(--field-bg);color:var(--text);
+    border:0.5px solid var(--field-border);border-radius:7px;
+    font-family:inherit;font-size:12.5px;font-weight:500;
+    padding:6px 12px;cursor:pointer;
+    transition:background 0.12s ease;
+  }
+  .tool-btn:hover{background:var(--row-hover);}
   .add-btn{
-    margin-left:auto;
     background:var(--accent);color:#fff;
     border:none;border-radius:7px;
     font-family:inherit;font-size:12.5px;font-weight:600;
@@ -288,7 +304,12 @@
     <main class="content">
       <div class="content-head">
         <h2 id="contentTitle">All Finds</h2>
-        <button class="add-btn" id="toggleForm">+ Add</button>
+        <div class="head-actions">
+          <button class="tool-btn" id="importBtn" title="Import a stash backup">Import</button>
+          <button class="tool-btn" id="exportBtn" title="Download your stash as a backup">Export</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden />
+          <button class="add-btn" id="toggleForm">+ Add</button>
+        </div>
       </div>
 
       <form class="add-form" id="addForm">
@@ -878,6 +899,52 @@ addForm.addEventListener('submit', (e) => {
   activeFilter = category;
   searchInput.value = '';
   render();
+});
+
+/* ---------- export / import ---------- */
+const exportBtn = document.getElementById('exportBtn');
+const importBtn = document.getElementById('importBtn');
+const importFile = document.getElementById('importFile');
+
+exportBtn.addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(resources, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'the-stash-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+importBtn.addEventListener('click', () => importFile.click());
+
+importFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data) || !data.every(r => r && r.title && r.url && r.category)){
+        alert('That file doesn’t look like a stash backup.');
+        return;
+      }
+      if(confirm(`Replace your current stash with ${data.length} finds from this backup?`)){
+        resources = data;
+        activeFilter = 'All';
+        searchInput.value = '';
+        saveResources();
+        render();
+      }
+    }catch(err){
+      alert('Could not read that file — is it a valid stash backup?');
+    }finally{
+      importFile.value = '';
+    }
+  };
+  reader.readAsText(file);
 });
 
 loadResources();
