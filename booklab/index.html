@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Book Lab — turn any book into a college course</title>
+<meta name="description" content="Type in any book. Get a 10-week college course — syllabus, lectures, quizzes, a final exam, and a certificate. By Grace Branding Co.">
+<style>
+  :root{
+    --paper:#f7f1e6;
+    --paper-deep:#efe6d6;
+    --ink:#2b171b;
+    --ink-soft:#5c4348;
+    --cherry:#7f1d2d;
+    --cherry-bright:#b91c30;
+    --pink:#f3c9dd;
+    --pink-deep:#e5a8c5;
+    --gold:#b98a2f;
+    --card:#fffdf8;
+    --rule:#d9c9b2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;
+    min-height:100vh;
+    background-image:radial-gradient(circle at 20% 0%, rgba(243,201,221,.35), transparent 45%),
+                     radial-gradient(circle at 90% 90%, rgba(127,29,45,.08), transparent 40%);
+  }
+  .sans{font-family:'Helvetica Neue',Arial,sans-serif}
+
+  .shell{max-width:760px;margin:0 auto;padding:0 20px 80px}
+
+  /* ── top bar ── */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 4px;border-bottom:1px solid var(--rule);margin-bottom:8px;
+  }
+  .wordmark{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cherry);text-decoration:none}
+  .wordmark b{font-weight:700}
+  .topbar .crumb{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .top-btn{
+    font-family:inherit;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    background:none;border:1px solid var(--rule);border-radius:999px;padding:7px 14px;
+    color:var(--ink-soft);cursor:pointer;white-space:nowrap;
+  }
+  .top-btn:hover{border-color:var(--cherry);color:var(--cherry)}
+  .topbar .crumb{white-space:nowrap}
+  @media(max-width:520px){.topbar .crumb{display:none}}
+
+  /* ── views ── */
+  .view{display:none;animation:fadein .45s ease}
+  .view.on{display:block}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ── lobby ── */
+  .masthead{text-align:center;padding:52px 0 10px}
+  .masthead .over{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cherry-bright)}
+  .masthead h1{
+    font-size:clamp(2.6rem,9vw,4.4rem);line-height:1.02;margin:14px 0 16px;
+    font-weight:700;letter-spacing:-.01em;
+  }
+  .masthead h1 em{font-style:italic;color:var(--cherry)}
+  .masthead .sub{font-size:1.05rem;color:var(--ink-soft);max-width:30em;margin:0 auto;line-height:1.55}
+  .seal{
+    display:inline-block;margin-top:18px;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--cherry);border:1px solid var(--cherry);border-radius:999px;padding:6px 16px;background:rgba(243,201,221,.35);
+  }
+
+  .deskslip{
+    background:var(--card);border:1px solid var(--rule);border-radius:14px;
+    padding:26px 22px;margin:34px auto 0;max-width:540px;
+    box-shadow:0 18px 40px -24px rgba(43,23,27,.35);
+  }
+  .deskslip label{display:block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px}
+  .deskslip input[type=text]{
+    width:100%;font-family:inherit;font-size:1.15rem;padding:12px 4px;margin-bottom:16px;
+    border:none;border-bottom:2px solid var(--rule);background:transparent;color:var(--ink);outline:none;
+  }
+  .deskslip input[type=text]:focus{border-bottom-color:var(--cherry-bright)}
+  .go{
+    width:100%;font-family:inherit;font-size:1.05rem;letter-spacing:.06em;cursor:pointer;
+    background:var(--cherry);color:#fdf3f7;border:none;border-radius:10px;padding:15px 10px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .go:hover{background:var(--cherry-bright);transform:translateY(-1px)}
+  .go:active{transform:translateY(1px) scale(.99)}
+  .tryline{margin-top:16px;font-size:.8rem;color:var(--ink-soft);text-align:center}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+  .chip{
+    font-family:inherit;font-size:.82rem;cursor:pointer;color:var(--cherry);
+    background:rgba(243,201,221,.4);border:1px solid var(--pink-deep);border-radius:999px;padding:6px 13px;
+  }
+  .chip:hover{background:var(--pink)}
+
+  .lobby-foot{text-align:center;margin-top:44px;font-size:.85rem;color:var(--ink-soft);line-height:1.7}
+  .lobby-foot a{color:var(--cherry);text-decoration:underline;text-underline-offset:3px}
+
+  /* ── generating ── */
+  #generating{text-align:center;padding-top:40px}
+  .gen-book{font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;color:var(--cherry-bright);margin-bottom:6px}
+  #generating h2{font-size:clamp(1.5rem,5.5vw,2.2rem);margin-bottom:34px}
+  #generating h2 em{font-style:italic;color:var(--cherry)}
+  .ticklist{max-width:430px;margin:0 auto;text-align:left}
+  .tick{
+    display:flex;align-items:center;gap:14px;padding:13px 6px;
+    border-bottom:1px dashed var(--rule);opacity:.28;transition:opacity .3s ease;
+    font-size:1.02rem;
+  }
+  .tick.active{opacity:1}
+  .tick .box{
+    width:24px;height:24px;flex:none;border:2px solid var(--cherry);border-radius:7px;
+    display:grid;place-items:center;font-size:.85rem;color:#fdf3f7;background:transparent;
+    transition:background .2s ease;
+  }
+  .tick.done .box{background:var(--cherry)}
+  .tick .box span{opacity:0;transform:scale(.4)}
+  .tick.done .box span{opacity:1;transform:scale(1);transition:all .25s cubic-bezier(.2,1.6,.5,1)}
+  .tick.active:not(.done) .box{animation:pulse 1s ease infinite}
+  @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(185,28,48,.15)}}
+  .gen-bar{max-width:430px;margin:30px auto 0;height:6px;border-radius:99px;background:var(--paper-deep);overflow:hidden}
+  .gen-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--cherry),var(--cherry-bright),var(--pink-deep));transition:width .5s ease}
+  .gen-small{margin-top:14px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+  /* ── course dashboard ── */
+  .course-head{padding:34px 0 8px;border-bottom:3px double var(--cherry);margin-bottom:24px}
+  .course-code{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--cherry-bright)}
+  .course-head h2{font-size:clamp(1.9rem,6.5vw,3rem);line-height:1.08;margin:10px 0 12px}
+  .course-head .from{font-style:italic;color:var(--ink-soft);font-size:1rem}
+  .catalog{
+    background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--cherry);
+    border-radius:0 12px 12px 0;padding:18px 20px;margin:22px 0;line-height:1.65;color:var(--ink-soft);
+  }
+  .sec-label{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--cherry);margin:34px 0 14px;display:flex;align-items:center;gap:12px}
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--rule)}
+  .objectives{list-style:none;columns:1;line-height:1.6}
+  @media(min-width:600px){.objectives{columns:2;column-gap:34px}}
+  .objectives li{padding:5px 0 5px 26px;position:relative;break-inside:avoid;font-size:.95rem}
+  .objectives li::before{content:"✦";position:absolute;left:2px;color:var(--cherry-bright)}
+
+  .weeks{list-style:none;display:grid;gap:10px}
+  .week-card{
+    display:flex;align-items:center;gap:16px;width:100%;text-align:left;cursor:pointer;
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:15px 17px;
+    font-family:inherit;color:var(--ink);font-size:1rem;
+    transition:transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+  }
+  .week-card:hover{transform:translateX(4px);border-color:var(--cherry);box-shadow:0 10px 26px -18px rgba(127,29,45,.5)}
+  .week-num{
+    flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+    background:var(--pink);color:var(--cherry);font-weight:700;font-size:.8rem;letter-spacing:.02em;
+  }
+  .week-card.exam-card .week-num{background:var(--cherry);color:#fdf3f7}
+  .week-title{flex:1;line-height:1.35}
+  .week-title small{display:block;font-size:.76rem;color:var(--ink-soft);font-style:italic;margin-top:2px}
+  .week-go{color:var(--cherry-bright);font-size:1.1rem}
+
+  .dash-foot{margin-top:40px;text-align:center}
+  .cert-btn{
+    font-family:inherit;font-size:.95rem;cursor:pointer;letter-spacing:.04em;
+    background:transparent;color:var(--cherry);border:2px solid var(--cherry);border-radius:10px;padding:13px 26px;
+  }
+  .cert-btn:hover{background:var(--cherry);color:#fdf3f7}
+
+  /* ── week view ── */
+  .wk-head{padding-top:30px}
+  .wk-kicker{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--cherry-bright)}
+  .wk-head h2{font-size:clamp(1.7rem,6vw,2.5rem);margin:8px 0 6px;line-height:1.12}
+  .wk-reading{font-style:italic;color:var(--ink-soft);font-size:.92rem;margin-bottom:8px}
+  .lecture{line-height:1.75;font-size:1.03rem;margin-top:10px}
+  .lecture p{margin:0 0 16px}
+  .takeaways{background:rgba(243,201,221,.32);border:1px solid var(--pink-deep);border-radius:12px;padding:18px 20px;margin:8px 0 4px}
+  .takeaways ol{margin-left:20px;line-height:1.7}
+
+  .quiz{display:grid;gap:12px}
+  .q{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 18px}
+  .q .prompt{font-weight:700;line-height:1.45;margin-bottom:10px}
+  .q ul{list-style:none;display:grid;gap:6px;margin-bottom:12px}
+  .q ul li{padding:7px 12px;border:1px dashed var(--rule);border-radius:8px;font-size:.94rem;line-height:1.4}
+  .reveal{
+    font-family:inherit;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+    border:1px solid var(--cherry);background:transparent;color:var(--cherry);border-radius:999px;padding:7px 15px;
+  }
+  .reveal:hover{background:var(--pink)}
+  .answer{display:none;margin-top:11px;padding:12px 14px;border-radius:8px;background:rgba(185,28,48,.07);border-left:3px solid var(--cherry-bright);font-size:.94rem;line-height:1.55}
+  .q.revealed .answer{display:block;animation:fadein .3s ease}
+  .q.revealed .reveal{display:none}
+  .q.revealed li.correct{border:1px solid var(--cherry-bright);background:rgba(243,201,221,.4)}
+
+  .plainlist{line-height:1.75;margin-left:20px}
+  .assign{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:17px 19px;line-height:1.65}
+  .journal{
+    border:1px solid var(--rule);border-radius:12px;padding:18px 20px;line-height:1.65;font-style:italic;
+    background:repeating-linear-gradient(transparent,transparent 27px,var(--rule) 28px);
+  }
+  .wk-nav{display:flex;justify-content:space-between;gap:12px;margin-top:40px}
+  .wk-nav button{
+    font-family:inherit;font-size:.88rem;cursor:pointer;background:var(--card);color:var(--ink);
+    border:1px solid var(--rule);border-radius:10px;padding:12px 18px;
+  }
+  .wk-nav button:hover{border-color:var(--cherry);color:var(--cherry)}
+
+  /* ── certificate ── */
+  #certificate{padding-top:30px}
+  .cert{
+    background:var(--card);border:2px solid var(--cherry);border-radius:6px;padding:8px;margin-top:22px;
+    box-shadow:0 24px 50px -30px rgba(43,23,27,.5);
+  }
+  .cert-inner{border:1px solid var(--pink-deep);padding:44px 26px;text-align:center}
+  .cert-inner .lab{font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--cherry-bright)}
+  .cert-inner h3{font-size:clamp(1.6rem,5.5vw,2.3rem);margin:14px 0 4px}
+  .cert-inner .certifies{font-style:italic;color:var(--ink-soft);margin:12px 0 4px}
+  .cert-name{
+    font-size:clamp(1.5rem,6vw,2.1rem);font-style:italic;color:var(--cherry);
+    border:none;border-bottom:1px solid var(--rule);background:transparent;text-align:center;
+    font-family:inherit;outline:none;width:min(90%,420px);padding:6px 0;margin:6px 0 4px;
+  }
+  .cert-course{font-size:1.02rem;line-height:1.5;margin:12px auto 6px;max-width:30em}
+  .cert-row{display:flex;justify-content:space-around;align-items:flex-end;margin-top:34px;gap:14px}
+  .cert-sig{font-size:.78rem;color:var(--ink-soft)}
+  .cert-sig b{display:block;font-size:1.05rem;font-style:italic;color:var(--ink);border-bottom:1px solid var(--rule);padding:0 14px 5px;margin-bottom:6px;font-weight:400}
+  .cert-medal{
+    width:74px;height:74px;border-radius:50%;background:var(--cherry);color:#fdf3f7;
+    display:grid;place-items:center;font-size:1.6rem;box-shadow:0 0 0 5px var(--pink);
+  }
+  .cert-tag{display:inline-block;margin-top:26px;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cherry);border:1px solid var(--cherry);border-radius:999px;padding:6px 15px}
+
+  /* ── misc ── */
+  .backline{margin-top:26px;text-align:center;font-size:.85rem}
+  .backline button{font-family:inherit;background:none;border:none;color:var(--cherry);cursor:pointer;font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <a class="wordmark" href="/">grace<b>branding</b>co.</a>
+    <span class="crumb">The Book Lab</span>
+    <button class="top-btn" id="restart" style="display:none">New book</button>
+  </header>
+
+  <!-- ── LOBBY ── -->
+  <section class="view on" id="lobby">
+    <div class="masthead">
+      <div class="over">Grace Branding Co. presents</div>
+      <h1>The <em>Book</em> Lab</h1>
+      <p class="sub">Type in literally any book. Get back a 10-week college course — syllabus, lectures, quizzes, a final exam, and a certificate with your name on it.</p>
+      <span class="seal">every book = one semester</span>
+    </div>
+
+    <div class="deskslip">
+      <label for="book-in">Book title</label>
+      <input type="text" id="book-in" placeholder="Atomic Habits" autocomplete="off">
+      <label for="author-in">Author <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input type="text" id="author-in" placeholder="James Clear" autocomplete="off">
+      <button class="go" id="generate">✨ Generate my course</button>
+      <div class="tryline">or try a book from the demo shelf:</div>
+      <div class="chips">
+        <button class="chip" data-book="Atomic Habits" data-author="James Clear">Atomic Habits</button>
+        <button class="chip" data-book="The Psychology of Money" data-author="Morgan Housel">The Psychology of Money</button>
+        <button class="chip" data-book="Educated" data-author="Tara Westover">Educated</button>
+      </div>
+    </div>
+
+    <p class="lobby-foot">
+      You read 25 books last year and remember 3. Highlighting isn't studying —
+      so give every book a quiz, homework, and a final exam.<br>
+      Want the full kit — Notion Course Shelf, printables, study method guide?
+      <a href="https://gracebrandingco.gumroad.com" target="_blank" rel="noopener">Get The Full Lab ⭐</a>
+    </p>
+  </section>
+
+  <!-- ── GENERATING ── -->
+  <section class="view" id="generating">
+    <div class="gen-book" id="gen-book-line">Atomic Habits</div>
+    <h2>Building your <em>semester</em>…</h2>
+    <div class="ticklist" id="ticklist"></div>
+    <div class="gen-bar"><i id="gen-bar-fill"></i></div>
+    <div class="gen-small" id="gen-small">course engine warming up</div>
+  </section>
+
+  <!-- ── COURSE DASHBOARD ── -->
+  <section class="view" id="course">
+    <div class="course-head">
+      <div class="course-code" id="c-code"></div>
+      <h2 id="c-title"></h2>
+      <div class="from" id="c-from"></div>
+    </div>
+    <div class="catalog" id="c-desc"></div>
+
+    <div class="sec-label">Learning objectives</div>
+    <ul class="objectives" id="c-objectives"></ul>
+
+    <div class="sec-label">10-week syllabus</div>
+    <ol class="weeks" id="c-weeks"></ol>
+
+    <div class="dash-foot">
+      <button class="cert-btn" id="to-cert">🎓 View course certificate</button>
+    </div>
+  </section>
+
+  <!-- ── WEEK VIEW ── -->
+  <section class="view" id="week">
+    <div class="wk-head">
+      <div class="wk-kicker" id="w-kicker"></div>
+      <h2 id="w-title"></h2>
+      <div class="wk-reading" id="w-reading"></div>
+    </div>
+
+    <div class="sec-label">Lecture</div>
+    <div class="lecture" id="w-lecture"></div>
+
+    <div class="sec-label">Key takeaways</div>
+    <div class="takeaways"><ol id="w-takeaways"></ol></div>
+
+    <div class="sec-label" id="w-quiz-label">Quiz — tap to reveal answers</div>
+    <div class="quiz" id="w-quiz"></div>
+
+    <div class="sec-label">Discussion</div>
+    <ul class="plainlist" id="w-discussion"></ul>
+
+    <div class="sec-label">This week's assignment</div>
+    <div class="assign" id="w-assign"></div>
+
+    <div class="sec-label">Reflection journal</div>
+    <div class="journal" id="w-journal"></div>
+
+    <div class="wk-nav">
+      <button id="w-prev">← Previous</button>
+      <button id="w-dash">Syllabus</button>
+      <button id="w-next">Next →</button>
+    </div>
+  </section>
+
+  <!-- ── CERTIFICATE ── -->
+  <section class="view" id="certificate">
+    <div class="sec-label">Certificate of completion</div>
+    <div class="cert">
+      <div class="cert-inner">
+        <div class="lab">The Book Lab · Grace Branding Co.</div>
+        <h3>Certificate of Completion</h3>
+        <div class="certifies">this certifies that</div>
+        <input class="cert-name" id="cert-name" value="Grace Williams" aria-label="Your name">
+        <div class="certifies">has completed the 10-week course</div>
+        <div class="cert-course" id="cert-course"></div>
+        <div class="cert-row">
+          <div class="cert-sig"><b>The Book Lab</b>course engine</div>
+          <div class="cert-medal">🎓</div>
+          <div class="cert-sig"><b id="cert-date"></b>date of completion</div>
+        </div>
+        <span class="cert-tag">Course complete</span>
+      </div>
+    </div>
+    <div class="backline"><button id="cert-back">← back to syllabus</button></div>
+  </section>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   THE BOOK LAB — demo course engine
+   Curated demo-shelf books get a full hand-built course;
+   any other title gets the seminar edition template.
+   ══════════════════════════════════════════════════════════ */
+
+const DEMO_SHELF = {
+
+"atomic habits": {
+  code: "HAB 101 · Behavioral Design",
+  title: "The Architecture of Habit",
+  book: "Atomic Habits", author: "James Clear",
+  desc: "An intensive ten-week seminar on the mechanics of behavior change, built on James Clear's Atomic Habits. Students examine why tiny improvements compound into remarkable results, how identity shapes behavior, and how the four laws of behavior change — make it obvious, attractive, easy, and satisfying — can be engineered deliberately. Coursework combines weekly lectures, applied assignments, and self-testing, culminating in a final exam and a personal habit-system portfolio.",
+  objectives: [
+    "Analyze why systems outperform goals in long-term change",
+    "Explain the four-stage habit loop: cue, craving, response, reward",
+    "Apply the Four Laws of Behavior Change to a real habit",
+    "Design an environment that makes good cues obvious",
+    "Evaluate the role of identity in sustaining behavior",
+    "Construct habit stacks and implementation intentions",
+    "Use habit tracking and recovery rules to survive missed days",
+    "Critique the limits of habit and the need for reflection"
+  ],
+  weeks: [
+    { theme:"Tiny Changes, Remarkable Results", reading:"Chapter 1",
+      lecture:[
+        "The central mathematical provocation of this course: improving by just 1% a day compounds to roughly 37× better over a year. Clear's argument is not that small habits matter because of any single day, but because compounding applies to behavior the way it applies to money. Habits are the compound interest of self-improvement — and, just as quietly, of self-sabotage.",
+        "Two ideas anchor this week. First, the plateau of latent potential: results lag effort, so early work feels wasted. The ice cube doesn't melt at 25°F, or 30°F, or 31°F — it melts at 32°F, and every prior degree was 'wasted' only in appearance. People quit in the valley of disappointment because they expect linear payoff from an exponential process. Second, systems versus goals. Winners and losers share the same goals, so the goal cannot be what separates them. Goals set direction; systems produce progress. You do not rise to the level of your goals — you fall to the level of your systems.",
+        "Frame for the semester: stop asking 'what do I want to achieve?' and start asking 'what kind of system would make the result inevitable?'"
+      ],
+      takeaways:[
+        "1% better daily compounds to ~37× better in a year",
+        "Results lag effort — breakthrough moments are the release of stored potential",
+        "Forget the goal; design the system"
+      ],
+      quiz:[
+        { q:"According to Clear, why do people abandon new habits early?",
+          o:["The habits were the wrong ones to build","They expect linear progress from a compounding process","They lack willpower as a personality trait","They set goals that are too small"],
+          a:1, why:"Progress lags effort (the plateau of latent potential), so people quit in the 'valley of disappointment' before compounding shows up." },
+        { q:"'You do not rise to the level of your goals…'",
+          o:["…you rise to the level of your ambition","…you fall to the level of your systems","…you rise to the level of your peers","…you fall to the level of your fears"],
+          a:1, why:"Goals set direction, but daily systems determine actual outcomes." },
+        { q:"Why does Clear say goals can't be what separates winners from losers?",
+          o:["Because winners set process goals","Because goals fade over time","Because winners and losers share the same goals","Because goals are outcome-biased"],
+          a:2, why:"Every Olympian wants the gold medal — identical goals, different systems, different results." },
+        { q:"The ice-cube metaphor illustrates…",
+          o:["habits melting under stress","the invisible storage of potential before a threshold","the fragility of motivation","temperature as a habit cue"],
+          a:1, why:"Nothing appears to happen from 25° to 31° — then at 32° everything happens at once. Latent potential releases at a threshold." },
+        { q:"A habit is best defined in this course as…",
+          o:["a behavior repeated enough to become automatic","any goal-directed action","a rewarded behavior","a behavior you enjoy"],
+          a:0, why:"Repetition until automaticity is the defining property — enjoyment and rewards shape it, but automaticity is what makes it a habit." }
+      ],
+      discussion:[
+        "Where in your life are you currently in a 'valley of disappointment'?",
+        "Pick a public figure you admire. What visible results of theirs are actually invisible systems?",
+        "Is the 1%-better framing motivating or misleading? Argue both sides."
+      ],
+      assignment:"Choose ONE area of your life. Write down the goal you've had, then translate it into a system: the daily or weekly behavior that would make the goal inevitable. Keep it under two sentences.",
+      journal:"What result am I chasing — and what boring, repeatable system am I unwilling (so far) to fall in love with?"
+    },
+    { theme:"Identity: The Real Engine of Change", reading:"Chapter 2",
+      lecture:[
+        "There are three layers at which change can happen: outcomes (what you get), processes (what you do), and identity (what you believe). Most people work outside-in — 'I want to lose 20 pounds' — and wonder why behavior snaps back. Clear argues true behavior change is identity change: the goal is not to read a book, it is to become a reader. Not to run a marathon, but to become a runner.",
+        "The mechanism is evidence. Every action you take is a vote for the type of person you wish to become. No single vote wins the election, but a pile of votes becomes proof, and proof becomes belief. This reframing also explains relapse: when a behavior conflicts with self-image ('I'm just not a morning person'), identity wins eventually. The deepest form of intrinsic motivation is when a habit becomes part of who you are.",
+        "The practical two-step: decide who you want to be, then prove it to yourself with small wins. Ask of every habit this semester: who does this behavior say I am becoming?"
+      ],
+      takeaways:[
+        "Change happens at three layers: outcomes, process, identity",
+        "Every action is a vote for the person you're becoming",
+        "Habits stick when they're rooted in identity, not outcomes"
+      ],
+      quiz:[
+        { q:"Which is an identity-based habit statement?",
+          o:["'I want to run a marathon'","'I run four times a week'","'I am a runner'","'I will run tomorrow at 7am'"],
+          a:2, why:"Outcome → process → identity. 'I am a runner' operates at the identity layer; the others are outcomes, processes, and plans." },
+        { q:"In Clear's framing, small wins matter because they…",
+          o:["release dopamine","are easier to schedule","act as evidence (votes) for a new identity","prevent burnout"],
+          a:2, why:"Actions accumulate as proof of who you are becoming — that proof is what rewires self-image." },
+        { q:"Why do outcome-first habits tend to snap back?",
+          o:["Outcomes are too far away","The underlying self-image never changed","Rewards are delayed","Goals are usually unrealistic"],
+          a:1, why:"When behavior and identity conflict, identity wins — so lasting change must happen at the belief layer." }
+      ],
+      discussion:[
+        "Which of your current habits are votes for an identity you don't actually want?",
+        "Can identity-based habits become a trap (rigidity, ego)? When?",
+        "How would you redesign a New Year's resolution as an identity statement?"
+      ],
+      assignment:"Write one identity statement ('I am the kind of person who…') and list three tiny actions this week that would count as votes for it. Cast at least two.",
+      journal:"Who did today's behavior say I am? Was that on purpose?"
+    },
+    { theme:"The Habit Loop: Cue → Craving → Response → Reward", reading:"Chapter 3",
+      lecture:[
+        "All habits move through the same four stages. The cue triggers the brain to predict a reward; the craving is the motivational charge the prediction creates; the response is the behavior itself; and the reward delivers the payoff and teaches the brain to run the loop again. Remove any stage and the habit dies: no cue, it never starts; no craving, no desire to act; too difficult, no response; no reward, no reason to repeat.",
+        "From this loop Clear derives the Four Laws of Behavior Change, the spine of this course: make it obvious (cue), make it attractive (craving), make it easy (response), make it satisfying (reward). Breaking a bad habit simply inverts the laws — invisible, unattractive, difficult, unsatisfying. The loop runs constantly and mostly unconsciously; the point of studying it is to move from being shaped by loops to authoring them.",
+        "This week is diagnostic: before changing anything, learn to see the loops already running your day."
+      ],
+      takeaways:[
+        "Every habit = cue → craving → response → reward",
+        "The Four Laws map one intervention onto each stage",
+        "Bad habits are broken by inverting the laws, not by willpower"
+      ],
+      quiz:[
+        { q:"Your phone buzzes and you feel a pull to check it. The buzz and the pull are…",
+          o:["response and reward","cue and craving","cue and response","craving and reward"],
+          a:1, why:"The notification is the cue; the itch to check is the craving it generates." },
+        { q:"Which law targets the 'response' stage?",
+          o:["Make it obvious","Make it attractive","Make it easy","Make it satisfying"],
+          a:2, why:"The response happens only if the behavior is easy enough — friction governs action." },
+        { q:"To break a bad habit at the cue stage, you should make the cue…",
+          o:["unsatisfying","difficult","invisible","unattractive"],
+          a:2, why:"Inversion of 'make it obvious' is 'make it invisible' — remove the trigger from your environment." }
+      ],
+      discussion:[
+        "Trace one bad habit through all four stages. Which stage is its weakest link?",
+        "Are there habits with no identifiable reward? Or are we just bad at seeing the reward?",
+        "Willpower vs. loop-design: which explains your best self-control moments?"
+      ],
+      assignment:"Run a one-day habit audit: log every loop you notice (cue → craving → response → reward), no judgment, just observation. Bring your three most surprising entries to discussion.",
+      journal:"Which loop ran me today that I never consciously chose?"
+    },
+    { theme:"Make It Obvious — Cues, Stacking & Environment", reading:"Chapters 4–7",
+      lecture:[
+        "You can't improve a habit you can't see. This unit begins with awareness — the Habits Scorecard, a plain inventory of daily behaviors marked good, bad, or neutral — because until the automatic becomes visible, there is nothing to design.",
+        "Then, two of the most practical tools in the book. Implementation intentions: 'I will [BEHAVIOR] at [TIME] in [LOCATION].' People who plan when and where act far more often than people who rely on feeling motivated. Habit stacking chains a new habit to an existing one: 'After I pour my morning coffee, I will read one page.' The current habit becomes the cue.",
+        "Finally, environment design: motivation is overrated, context wins. Make good cues loud (the book on the pillow, the water bottle on the desk) and give habits their own spaces. And the inversion — self-control is a short-term strategy; the people with the best 'discipline' are the ones who need it least, because they simply removed the cue. Make bad-habit triggers invisible rather than heroically resisting them."
+      ],
+      takeaways:[
+        "Awareness first: you can't redesign invisible behavior",
+        "'I will X at TIME in LOCATION' + habit stacking beat motivation",
+        "Disciplined people don't resist cues — they delete them"
+      ],
+      quiz:[
+        { q:"'After I brush my teeth, I will floss one tooth' is an example of…",
+          o:["an implementation intention","habit stacking","temptation bundling","a commitment device"],
+          a:1, why:"An existing habit (brushing) is used as the cue for the new one — that's stacking." },
+        { q:"Clear's evidence-backed alternative to relying on motivation is…",
+          o:["accountability partners","stating when and where you'll act","larger rewards","tracking streaks"],
+          a:1, why:"Implementation intentions pre-decide time and place, so the behavior no longer waits on mood." },
+        { q:"The inversion of 'make it obvious' is…",
+          o:["make it difficult","make it invisible","make it unattractive","make it unsatisfying"],
+          a:1, why:"Cut the cue and the loop never starts — resisting temptation is the losing strategy." },
+        { q:"Why does Clear call self-control 'a short-term strategy'?",
+          o:["Willpower depletes physically","Cue exposure keeps regenerating the craving","Self-control is genetic","Rewards fade over time"],
+          a:1, why:"As long as the cue keeps appearing, the craving keeps returning — environment beats resistance." }
+      ],
+      discussion:[
+        "What would a Habits Scorecard of your phone use look like?",
+        "Design the ideal workspace for one habit you want. What did you add — and remove?",
+        "Is environment design freedom or self-manipulation?"
+      ],
+      assignment:"Write one implementation intention and one habit stack for the identity you chose in Week 2. Then change ONE thing in your physical space to make the cue unmissable.",
+      journal:"What did my environment 'decide' for me today?"
+    },
+    { theme:"Make It Attractive — Dopamine, Bundling & Belonging", reading:"Chapters 8–10",
+      lecture:[
+        "Habits are dopamine-driven, and the crucial detail is timing: dopamine spikes in anticipation of reward, not only on delivery. The craving, not the payoff, is what pushes you off the couch. This is why 'making it attractive' works — you are engineering anticipation.",
+        "Temptation bundling pairs a want with a should: only watch your show while on the treadmill; only get the fancy latte while doing the weekly review. Formally: after [HABIT I NEED], I get [HABIT I WANT].",
+        "Then the social layer, easy to underestimate: we imitate the close (family, friends), the many (the crowd), and the powerful (the prestigious). Joining a culture where your desired behavior is the normal behavior is one of the most effective moves available — belonging makes the habit attractive for free. The inversion: make bad habits unattractive by reframing what they cost you, and notice which 'tribes' quietly normalize them."
+      ],
+      takeaways:[
+        "Dopamine rises on anticipation — craving powers action",
+        "Bundle wants with shoulds",
+        "Join groups where your desired habit is normal"
+      ],
+      quiz:[
+        { q:"Dopamine's key role in habit formation is that it spikes…",
+          o:["after the reward is consumed","in anticipation of the reward","during sleep consolidation","only for new rewards"],
+          a:1, why:"Anticipation generates the craving that initiates action — the spike precedes the payoff." },
+        { q:"'Only listen to your favorite podcast while cleaning' is…",
+          o:["habit stacking","an implementation intention","temptation bundling","reward substitution"],
+          a:2, why:"A want (podcast) is fused to a should (cleaning), making the should attractive." },
+        { q:"Which three groups does Clear say we imitate?",
+          o:["The young, the old, the rich","The close, the many, the powerful","Family, rivals, strangers","Peers, mentors, critics"],
+          a:1, why:"Proximity, popularity, and prestige are the three gravitational pulls on our behavior." }
+      ],
+      discussion:[
+        "Which of your habits are really the habits of your five closest people?",
+        "Is temptation bundling sustainable, or does it train you to need bribes?",
+        "Describe a community that made a hard behavior feel easy for you."
+      ],
+      assignment:"Create one temptation bundle for your Week 4 habit, and identify one group — online counts — where your desired identity is the default. Lurk or join.",
+      journal:"What do I currently find attractive that my future self would pay me to find repulsive?"
+    },
+    { theme:"Make It Easy — Friction, Repetition & Two Minutes", reading:"Chapters 11–14",
+      lecture:[
+        "Motion is not action. Planning, researching, and optimizing feel productive but produce nothing; Clear's rule is that habits form through frequency, not time. The photography-class study makes the point: the 'quantity' group, graded only on number of photos, produced better photos than the 'quality' group who theorized all term. Repetition is what carves the neural groove.",
+        "The Law of Least Effort: behavior defaults to whatever requires the least energy, so reduce friction for good habits (gym clothes laid out, guitar on a stand) and add friction to bad ones (delete the app, unplug the TV). Every barrier you remove is willpower you didn't need.",
+        "The Two-Minute Rule scales any habit down to its first two minutes: 'read before bed' becomes 'read one page.' The point is mastering the art of showing up — a habit must be established before it can be improved. Finally, commitment devices and one-time choices (automatic transfers, smaller plates, unsubscribing) lock in future behavior while your motivation is high."
+      ],
+      takeaways:[
+        "Frequency builds habits; 'being in motion' doesn't",
+        "Cut friction for good habits, add it to bad ones",
+        "Scale everything down to two minutes: master showing up"
+      ],
+      quiz:[
+        { q:"The photography-class study showed that better results came from…",
+          o:["students who studied composition theory","students graded on volume of work","students with better cameras","students given detailed feedback"],
+          a:1, why:"The quantity group actually practiced — repetition beat deliberation." },
+        { q:"'Read one page before bed' is an application of…",
+          o:["habit stacking","the Two-Minute Rule","temptation bundling","the Goldilocks Rule"],
+          a:1, why:"The habit is scaled to its two-minute gateway version — showing up comes before scaling up." },
+        { q:"Deleting a social app from your phone is best described as…",
+          o:["making the cue invisible AND adding friction","a commitment device only","an implementation intention","reward inversion"],
+          a:0, why:"It removes the cue and raises the effort cost of the response — two laws inverted at once." },
+        { q:"Why does Clear prefer 'how many times' over 'how long' for new habits?",
+          o:["Time is hard to measure","Automaticity is a function of repetitions","Longer habits cause burnout","Frequency is more motivating"],
+          a:1, why:"The habit line is crossed by reps performed, not calendar days elapsed." }
+      ],
+      discussion:[
+        "Where are you 'in motion' but never 'in action'?",
+        "What's the two-minute version of the habit you keep failing to start?",
+        "Which one-time choice could automate a good decision forever?"
+      ],
+      assignment:"Reduce your target habit to its two-minute version and do ONLY that version every day this week — you are not allowed to do more. Notice what happens to resistance.",
+      journal:"What am I optimizing instead of starting?"
+    },
+    { theme:"Make It Satisfying — Rewards, Tracking & Never Twice", reading:"Chapters 15–17",
+      lecture:[
+        "The cardinal rule of behavior change: what is immediately rewarded is repeated; what is immediately punished is avoided. The catch is that modern life is a delayed-return environment run by a brain built for immediate returns. Good habits pay off in years; bad habits pay off in seconds — which is why the costs of your good habits are in the present and the costs of your bad habits are in the future.",
+        "The fix is to bolt a little immediate satisfaction onto long-term behavior. Habit tracking is the cleanest version: the X on the calendar is obvious (cue), attractive (streak), and satisfying (progress made visible). Don't break the chain — but when life breaks it anyway, apply the recovery rule: never miss twice. Missing once is an accident; missing twice is the start of a new habit. The perfection trap ('streak's dead, why bother') does more damage than the missed day itself.",
+        "For breaking bad habits, invert: make the cost immediate and visible — an accountability partner or a habit contract puts real, instant consequences on the behavior."
+      ],
+      takeaways:[
+        "Immediate consequence beats delayed consequence, every time",
+        "Tracking makes progress satisfying — don't break the chain",
+        "Never miss twice: recovery speed matters more than perfection"
+      ],
+      quiz:[
+        { q:"Why do bad habits persist despite bad long-term outcomes?",
+          o:["Weak character","Their rewards are immediate; their costs are delayed","They're genetically wired","Social pressure enforces them"],
+          a:1, why:"In a mismatch between an immediate-return brain and a delayed-return world, the instant payoff wins." },
+        { q:"Clear's rule for a broken streak is…",
+          o:["restart the whole habit from day one","punish yourself mildly","never miss twice","take a full recovery week"],
+          a:2, why:"One miss is an accident; two is the beginning of a new (bad) habit. Get back on immediately." },
+        { q:"A habit contract works because it…",
+          o:["makes the behavior easier","creates an immediate, social cost for slipping","increases intrinsic motivation","removes the cue"],
+          a:1, why:"It imports instant consequences into a delayed-consequence situation — inverting 'make it satisfying.'" }
+      ],
+      discussion:[
+        "Does tracking ever backfire? When does the streak become the point?",
+        "Design an immediate reward for a habit whose real payoff is 10 years away — without undermining it.",
+        "Why is 'never miss twice' psychologically easier than 'never miss'?"
+      ],
+      assignment:"Start a 7-day tracker for your two-minute habit (paper is fine — draw 7 boxes). If you miss a day, your only job is to not miss the next one.",
+      journal:"How do I usually talk to myself after breaking a streak — and does that voice help me recover or quit?"
+    },
+    { theme:"Breaking Bad Habits: The Four Inversions", reading:"Chapters 4–17, inverted",
+      lecture:[
+        "This week consolidates the destructive toolkit. Every law inverts: make it invisible (remove cues — the app off the home screen, the snacks out of the house), make it unattractive (reframe the habit until you can articulate what it actually costs you), make it difficult (add friction, use commitment devices), and make it unsatisfying (make the cost immediate — accountability, contracts, public stakes).",
+        "The strategic insight is that inversions should be attempted in order. Cue removal is cheapest: no trigger, no battle. Willpower-based approaches start the fight at the hardest stage. Notice too that most 'bad habits' solve a real problem — boredom, stress, loneliness. The craving underneath is legitimate; only the response is costly. Sustainable change usually means rerouting the underlying need to a better response, not amputating the need.",
+        "Diagnose one bad habit of yours across all four stages this week, and attack the earliest stage first."
+      ],
+      takeaways:[
+        "Invert all four laws: invisible, unattractive, difficult, unsatisfying",
+        "Attack the cue first — it's the cheapest intervention",
+        "Bad habits serve real needs; reroute the need, don't deny it"
+      ],
+      quiz:[
+        { q:"The most efficient stage to attack a bad habit is usually…",
+          o:["the reward","the response","the craving","the cue"],
+          a:3, why:"If the cue never fires, no craving, response, or reward ever occurs — the loop dies upstream." },
+        { q:"'Keeping your phone in another room while working' combines which inversions?",
+          o:["invisible + difficult","unattractive + unsatisfying","difficult + unsatisfying","invisible + unattractive"],
+          a:0, why:"The cue is out of sight and the response now costs a walk — two laws inverted." },
+        { q:"Clear would say a stress-scrolling habit is best replaced by…",
+          o:["pure abstinence","a different response to the same craving","avoiding all stress","delayed rewards"],
+          a:1, why:"The need (stress relief) is legitimate; substitute a response that serves it at lower cost." }
+      ],
+      discussion:[
+        "Pick a habit you've 'quit' multiple times. Which stage were you attacking? Which should you have attacked?",
+        "When is abstinence better than substitution?",
+        "What does your most persistent bad habit protect you from?"
+      ],
+      assignment:"Run the four inversions on one bad habit: write one concrete intervention per law. Implement the cue-level one today.",
+      journal:"If my worst habit could talk, what would it say it's doing for me?"
+    },
+    { theme:"Advanced: Genes, Goldilocks & the Edge of Boredom", reading:"Chapters 18–19",
+      lecture:[
+        "Genes don't determine your destiny, but they do determine your areas of opportunity. Habits are easier when they run with the grain of your temperament; the highest-leverage move is choosing a game where the odds favor you. Clear's practical test: what feels like fun to you but work to others? Where do you get above-average returns on the same effort? If you can't find your game, build one — combine skills until you create a category you can lead.",
+        "The Goldilocks Rule: peak motivation lives at the edge of current ability — roughly 4% beyond comfort. Too easy breeds boredom, too hard breeds anxiety; just-manageable difficulty produces flow. But the deeper threat to mastery is not failure, it's boredom. Anyone works hard when motivated; professionals show up when the work is boring. The greatest menace to success, Clear argues, is not losing — it's repetition fatigue with a process that is working.",
+        "Mastery, then, is habits plus deliberate practice: automate the fundamentals, then aim consciousness at the next 4%."
+      ],
+      takeaways:[
+        "Pick games where your temperament gives you an edge",
+        "Motivation peaks at ~4% beyond current ability (flow)",
+        "Professionals keep showing up when it gets boring"
+      ],
+      quiz:[
+        { q:"The Goldilocks Rule says humans experience peak motivation when working on tasks that are…",
+          o:["completely novel","well within their ability","right at the edge of their ability","assigned by others"],
+          a:2, why:"Just-manageable difficulty — about 4% beyond comfort — sustains engagement and produces flow." },
+        { q:"Clear's 'greatest threat to success' is…",
+          o:["failure","boredom","competition","perfectionism"],
+          a:1, why:"People don't usually quit because they lose; they quit because the working process stops being novel." },
+        { q:"The role of genes in this framework is to…",
+          o:["set hard limits on achievement","determine which habits will feel easier to sustain","be irrelevant","predict motivation levels"],
+          a:1, why:"Genes point to areas of opportunity — choose fields where your traits compound your effort." }
+      ],
+      discussion:[
+        "What feels like play to you but work to everyone else?",
+        "Has 'find your passion' advice helped or harmed you compared to 'find your game'?",
+        "Describe the last time you quit something that was working. Was it boredom?"
+      ],
+      assignment:"Make your habit 4% harder — one page becomes two, two minutes becomes three. Note whether difficulty increased or decreased your desire to continue.",
+      journal:"Which boring rep did I do today that my future self will call the turning point?"
+    },
+    { theme:"The Downside of Habits & the Examined System", reading:"Chapter 20 + course synthesis",
+      lecture:[
+        "The final turn of the course is a warning: the same automaticity that makes habits powerful makes them blind. Once behavior runs on autopilot, you stop noticing small errors — mastery calcifies into complacency, identity into rigidity. The fix is habits plus reflection: a recurring, deliberate review of whether the system still serves the life. Clear's own version is an annual review (what went well, what didn't, what did I learn) and an integrity report (am I still the person I claim to be?).",
+        "Hold your identity lightly. 'I am an athlete' becomes brittle at the first injury; 'I am someone who trains what her body allows' bends without breaking. The tighter a single identity is gripped, the more devastating its loss.",
+        "And the course's closing thesis: success is not a goal to reach but a system to refine. There is no finish line — there is a person you are becoming, one small vote at a time. The Lab's last requirement is the final exam and one honest pass through your own system: keep what compounds, cut what doesn't, and never miss twice."
+      ],
+      takeaways:[
+        "Automaticity without reflection breeds complacency",
+        "Hold identity lightly — rigid self-images shatter",
+        "Success is a system you keep refining, not a line you cross"
+      ],
+      quiz:[
+        { q:"The hidden cost of full automaticity is…",
+          o:["higher energy use","loss of error-noticing and slow decay","reduced motivation","social isolation"],
+          a:1, why:"Autopilot stops checking the details — reflection is the counterweight that keeps habits honest." },
+        { q:"Clear's annual review and integrity report exist to…",
+          o:["celebrate wins publicly","re-align habits with identity and catch drift","replace habit tracking","set yearly goals"],
+          a:1, why:"They are scheduled reflection: is the system working, and am I still who I say I am?" },
+        { q:"'Hold your identity lightly' means…",
+          o:["avoid commitments","keep self-image flexible so setbacks don't destroy it","change identities often","never label yourself"],
+          a:1, why:"A flexible identity ('I'm someone who…') survives injury, job loss, and change; a rigid one shatters." }
+      ],
+      discussion:[
+        "Which of your strengths has quietly become a blind spot?",
+        "Design your own annual review: what three questions would it ask?",
+        "After ten weeks: systems or goals — has your answer actually changed?"
+      ],
+      assignment:"Write your one-page system review: the habit you built this course, what compounds, what you're cutting, and the identity statement you're carrying forward. This is your capstone.",
+      journal:"If I repeated today, every day, for ten years — where exactly do I land? Am I okay with that?"
+    }
+  ],
+  final:[
+    { q:"The foundational equation of the book is that habits are…",
+      o:["the compound interest of self-improvement","shortcuts for the brain","reflections of willpower","products of environment only"], a:0,
+      why:"Small behaviors compound — for you or against you — exactly like interest." },
+    { q:"Order the habit loop correctly:",
+      o:["craving → cue → reward → response","cue → craving → response → reward","cue → response → craving → reward","response → cue → craving → reward"], a:1,
+      why:"Cue predicts reward, craving motivates, response acts, reward teaches." },
+    { q:"Match the law to its stage: 'make it satisfying' targets…",
+      o:["the cue","the craving","the response","the reward"], a:3,
+      why:"Satisfaction closes the loop and tells the brain 'do that again.'" },
+    { q:"'Every action you take is a vote for…'",
+      o:["your future rewards","the type of person you wish to become","your habit streak","your environment"], a:1,
+      why:"Identity change is the accumulation of behavioral evidence." },
+    { q:"An implementation intention specifies…",
+      o:["a reward and a punishment","a time and a location for a behavior","an accountability partner","a two-minute version"], a:1,
+      why:"'I will [behavior] at [time] in [location]' — pre-deciding removes the motivation lottery." },
+    { q:"The photography-class study is evidence for…",
+      o:["quality over quantity","repetition over planning","talent over practice","feedback over practice"], a:1,
+      why:"The quantity group improved because they actually performed reps — habits form through frequency." },
+    { q:"Temptation bundling links…",
+      o:["two needed habits","a want to a should","a cue to a reward","a habit to a tracker"], a:1,
+      why:"The attractive behavior pays for the necessary one." },
+    { q:"'Never miss twice' addresses which failure mode?",
+      o:["overtraining","the perfection spiral after a broken streak","weak cues","boring plateaus"], a:1,
+      why:"One miss is noise; the story you tell after it is what kills the habit." },
+    { q:"The Goldilocks Rule places peak motivation at…",
+      o:["tasks far beyond ability","tasks at the edge of ability (~4% beyond)","fully automatic tasks","novel tasks of any difficulty"], a:1,
+      why:"Just-manageable difficulty sustains desire and produces flow." },
+    { q:"The book's closing warning is that mastery without reflection becomes…",
+      o:["burnout","complacency","anxiety","obsession"], a:1,
+      why:"Automaticity stops error-checking; scheduled review keeps the system honest." },
+    { q:"Which sequence best describes breaking a bad habit efficiently?",
+      o:["punish → resist → replace","make invisible → difficult → unsatisfying","reward → track → reflect","stack → bundle → track"], a:1,
+      why:"Invert the laws, starting upstream at the cue." },
+    { q:"The course's definition of success is…",
+      o:["reaching your goals","a system you continuously refine","a permanent identity","an unbroken streak"], a:1,
+      why:"No finish line — direction plus compounding, reviewed honestly." }
+  ]
+},
+
+"the psychology of money": {
+  code: "FIN 204 · Behavioral Finance",
+  title: "Wealth, Greed & Happiness",
+  book: "The Psychology of Money", author: "Morgan Housel",
+  desc: "A ten-week seminar on how humans actually behave with money, built on Morgan Housel's The Psychology of Money. Doing well with money, Housel argues, has little to do with intelligence and everything to do with behavior. Students examine luck and risk, compounding, the difference between getting wealthy and staying wealthy, and money's real dividend — control over one's time — closing with a personal money philosophy as the capstone.",
+  objectives: [
+    "Explain why financial outcomes are dominated by behavior, not IQ",
+    "Analyze the roles of luck and risk in famous outcomes",
+    "Evaluate 'enough' as a financial concept",
+    "Model how compounding rewards time over timing",
+    "Distinguish strategies for getting vs. staying wealthy",
+    "Apply tail-thinking to portfolios, careers, and creative work",
+    "Argue for savings without a spending goal",
+    "Draft a personal money philosophy that fits your own game"
+  ],
+  weeks: [
+    { theme:"No One's Crazy", reading:"Chapters 1–2",
+      lecture:[
+        "Everyone makes money decisions using a model of the world calibrated by their own narrow experience. A person who came of age in high inflation fears cash; a person raised in a bull market trusts stocks; a family that lived through scarcity hoards. Each behavior looks irrational from outside and feels obviously correct from inside. Housel's opening claim: no one is crazy — we are all reasoning from wildly different samples of a very large world.",
+        "The implication for this course is humility. Your financial instincts are not universal truths; they are autobiography. Before optimizing a single dollar, learn to ask: what experience taught me this belief, and would I still hold it with someone else's life behind me?",
+        "This lens — behavior over spreadsheets — governs everything that follows. Finance is taught like physics but practiced like psychology."
+      ],
+      takeaways:[
+        "Money decisions are autobiography, not mathematics",
+        "Behaviors that look crazy from outside feel reasonable from inside",
+        "Humility about your own sample size is the first financial skill"
+      ],
+      quiz:[
+        { q:"Housel's explanation for wildly different money behaviors is…",
+          o:["differences in intelligence","differences in personal historical experience","differences in education","differences in income"],
+          a:1, why:"People anchor on the economic world of their formative years — different worlds, different 'rational.'" },
+        { q:"'Finance is taught like physics but practiced like…'",
+          o:["poker","psychology","war","art"],
+          a:1, why:"Formulas assume rational actors; real decisions are made by emotional humans with personal histories." },
+        { q:"The lottery-ticket paradox (lowest-income households buying the most tickets) illustrates…",
+          o:["financial illiteracy","behavior that is reasonable from inside a lived reality","marketing exploitation","pure irrationality"],
+          a:1, why:"When ordinary paths to a dream feel closed, buying a dream — however unlikely — has internal logic." }
+      ],
+      discussion:[
+        "What money belief did your childhood install in you?",
+        "Name a spending behavior you judge in others. Construct its inside logic.",
+        "Should financial education focus on formulas or psychology?"
+      ],
+      assignment:"Write your 'money autobiography' in ten sentences: the three experiences that most shaped how you save, spend, and risk.",
+      journal:"Which of my money instincts is really my parents' instinct?"
+    },
+    { theme:"Luck & Risk: Twin Impostors", reading:"Chapter 3",
+      lecture:[
+        "Bill Gates attended one of the only high schools on earth with a computer terminal — a one-in-a-million stroke of luck he readily acknowledges. His equally brilliant friend Kent Evans died in a mountaineering accident before graduation: one-in-a-million risk. Same talent pool, opposite tails. Housel's point is not that effort doesn't matter, but that outcomes at the extremes are heavily shaped by forces nobody controls.",
+        "Practically: judge less, both ways. Admire people less for extreme wins and condemn them less for extreme losses; study broad patterns rather than singular icons, because the icon's path is the least repeatable. And when you win, hold the win humbly — the line between bold and reckless is drawn afterward, by the outcome.",
+        "Design your finances so that no single stroke of bad luck can end the game."
+      ],
+      takeaways:[
+        "Extreme outcomes carry the largest luck/risk component",
+        "Study patterns, not icons — icons are unrepeatable tails",
+        "Arrange your life so bad luck can't knock you out"
+      ],
+      quiz:[
+        { q:"The Gates/Evans pairing demonstrates…",
+          o:["talent always wins","luck and risk are the same force with opposite signs","risk can be eliminated","education determines outcomes"],
+          a:1, why:"Identical inputs, tail-opposite outcomes — the same randomness cuts both directions." },
+        { q:"Housel advises studying broad patterns over specific billionaires because…",
+          o:["billionaires lie","extreme cases are the least generalizable","patterns are simpler","icons are outdated"],
+          a:1, why:"The more extreme the outcome, the more luck it likely contains, and the less it can be copied." },
+        { q:"'The line between bold and reckless'…",
+          o:["is fixed by risk math","is drawn in hindsight by the outcome","depends on wealth","doesn't exist"],
+          a:1, why:"The same decision gets opposite labels depending on how the dice landed." }
+      ],
+      discussion:[
+        "Which of your successes had the biggest luck component? Say it out loud.",
+        "How should luck-awareness change how we judge failure — our own and others'?",
+        "Can you design a career that's exposed to good luck but shielded from ruin?"
+      ],
+      assignment:"Pick one success story you admire. List what's repeatable (behavior) vs. unrepeatable (luck) in it. Keep only the repeatable list.",
+      journal:"What would I attempt if one failure couldn't end me — and what makes failure currently fatal?"
+    },
+    { theme:"Never Enough", reading:"Chapter 4",
+      lecture:[
+        "Rajat Gupta ran McKinsey and sat on Goldman's board; Bernie Madoff ran a legitimately profitable business. Both were rich beyond any need and destroyed themselves reaching for more. Housel's diagnosis: they had no sense of enough. The hardest financial skill is getting the goalpost to stop moving — because expectations rise faster than results, and social comparison is a ladder with no top rung.",
+        "Enough is not a small ambition; it is the recognition that some things — reputation, freedom, family, dignity — are worth more than any marginal gain, and that the surest way to lose what you need is to risk it for what you merely want. Never risk what you have and need for what you don't have and don't need.",
+        "The comparison game is the engine of 'never enough.' The only winning move is refusing to play."
+      ],
+      takeaways:[
+        "The goalpost that moves with every gain can never be reached",
+        "Some things are invaluable — don't risk them for increments",
+        "Social comparison is a battle that can't be won, only declined"
+      ],
+      quiz:[
+        { q:"Gupta and Madoff appear in this chapter as examples of…",
+          o:["bad luck","fraud detection failures","men with everything who had no 'enough'","poor diversification"],
+          a:2, why:"Both risked what they needed (freedom, reputation) for what they didn't need (more)." },
+        { q:"The 'hardest financial skill' per Housel is…",
+          o:["compounding patience","getting the goalpost to stop moving","asset allocation","tax efficiency"],
+          a:1, why:"If expectations rise with results, no amount of success ever satisfies." },
+        { q:"Housel's rule about risk and need states…",
+          o:["risk only surplus capital","never risk what you have and need for what you don't have and don't need","risk rises with wealth","need defines risk tolerance"],
+          a:1, why:"The asymmetry is fatal: the upside is unnecessary, the downside is everything." }
+      ],
+      discussion:[
+        "Where has your own goalpost moved in the last five years?",
+        "Is 'enough' compatible with ambition?",
+        "What are you currently comparing that has no finish line?"
+      ],
+      assignment:"Write your 'enough list': the things you will never risk for more money. Be specific — this list is load-bearing for every later week.",
+      journal:"What do I already have that I once desperately wanted?"
+    },
+    { theme:"Confounding Compounding", reading:"Chapters 5–6",
+      lecture:[
+        "Warren Buffett's skill is investing; his secret is time. Roughly $84.2 billion of his $84.5 billion net worth came after his 50th birthday. Had he invested equally well but only from age 30 to 60, he would be a footnote. Compounding's outputs are so counterintuitive because exponential processes look boring for decades and then absurd — our linear minds systematically underrate them.",
+        "The practical corollary: good investing isn't about the highest returns; the highest returns tend to be one-off events that can't repeat. It's about pretty good returns sustained uninterrupted for the longest possible time. Interruption — panic selling, forced liquidation, catastrophe — is the enemy, which is why the next week's topic (survival) outranks brilliance.",
+        "Time in the market over timing the market is not a cliché here; it is the entire engine."
+      ],
+      takeaways:[
+        "Compounding's power lives in duration, not rate",
+        "Buffett's edge: he never stopped, starting at age 10",
+        "'Pretty good, uninterrupted' beats 'spectacular, sometimes'"
+      ],
+      quiz:[
+        { q:"The most important variable in Buffett's wealth, per Housel, is…",
+          o:["stock selection skill","the length of time he's been compounding","leverage","insurance float"],
+          a:1, why:"The overwhelming majority of his net worth arrived after 50 — duration did the heavy lifting." },
+        { q:"Why do humans systematically underrate compounding?",
+          o:["poor math education","exponential growth defies linear intuition","optimism bias","it rarely occurs in nature"],
+          a:1, why:"We extrapolate in straight lines; compounding curves quietly and then explodes." },
+        { q:"Good investing, in this framework, is defined as…",
+          o:["maximizing annual returns","pretty good returns you can sustain the longest","beating the index","minimizing fees"],
+          a:1, why:"Continuity beats intensity — the sequence must never be interrupted." }
+      ],
+      discussion:[
+        "Where outside money (skills, relationships, audience) does compounding apply to your life?",
+        "What has interrupted your compounding in the past?",
+        "Is patience a skill, a temperament, or a system?"
+      ],
+      assignment:"Identify one asset in your life compounding quietly (a skill, a following, savings). Calculate — roughly — where 10 more uninterrupted years takes it.",
+      journal:"What am I doing that only looks small because I'm early in the curve?"
+    },
+    { theme:"Getting Wealthy vs. Staying Wealthy", reading:"Chapters 7–8",
+      lecture:[
+        "Getting money and keeping money are different skills requiring opposite temperaments. Getting it rewards optimism, risk-taking, and putting yourself out there. Keeping it requires frugality, paranoia, and the humility to know that what was made can be taken away. Jesse Livermore made the equivalent of $3 billion shorting the 1929 crash — and was bankrupt within four years, because the aggression that built the fortune had no off switch.",
+        "Housel's survival framework: plan on the plan not going according to plan. Room for error — cash buffers, margin, low fixed costs — is not conservative timidity; it is what allows you to stay in the game long enough for compounding (Week 4) to work. The barbell mindset: optimistic about the long run, paranoid about the short run.",
+        "Survival is the only strategy that is a prerequisite for every other strategy."
+      ],
+      takeaways:[
+        "Getting wealthy and staying wealthy need opposite skills",
+        "Room for error is the price of staying in the game",
+        "Long-term optimist, short-term paranoid"
+      ],
+      quiz:[
+        { q:"Jesse Livermore's arc illustrates…",
+          o:["the danger of shorting","that acquisition skills without survival skills end in ruin","market manipulation","the 1929 crash's causes"],
+          a:1, why:"The same aggression that made the fortune, unchecked, destroyed it." },
+        { q:"'Room for error' in Housel's usage means…",
+          o:["expecting to be wrong and building buffers so wrongness isn't fatal","diversification","insurance products","conservative returns"],
+          a:0, why:"Margin of safety converts bad surprises from fatal to survivable — keeping compounding uninterrupted." },
+        { q:"The recommended temperament pairing is…",
+          o:["optimistic short-term, cautious long-term","paranoid short-term, optimistic long-term","uniformly optimistic","uniformly cautious"],
+          a:1, why:"Survive every short run so you're present for the long run you believe in." }
+      ],
+      discussion:[
+        "Where in your life are you playing 'get wealthy' rules in a 'stay wealthy' situation?",
+        "How much buffer is enough buffer? How would you know?",
+        "Is paranoia compatible with peace of mind?"
+      ],
+      assignment:"Stress-test your own plan: name the three most likely ways it breaks, and add one buffer against the worst of them this week.",
+      journal:"What is my equivalent of Livermore's 'no off switch'?"
+    },
+    { theme:"Tails, You Win", reading:"Chapter 9",
+      lecture:[
+        "A handful of outcomes drive nearly everything. Venture portfolios expect half their bets to fail and one to return the fund; Disney made hundreds of cartoons but Snow White paid for the studio; Amazon's stock covers a graveyard of failed experiments — the Fire Phone among them — because AWS and Prime are tails long enough to pay for all of it.",
+        "The emotional consequence: you can be wrong half the time and still win big, if you stay exposed to the tail. Most of what a genius does looks average; genius is the tail plus the persistence to keep producing until it arrives. This reframes 'failure rate' entirely — a high failure rate with tail exposure is a healthy portfolio, in investing and in creative work.",
+        "The discipline is twofold: keep making bets (exposure), and don't let any single failure end you (Week 5's survival rule). Tails need time and volume to appear."
+      ],
+      takeaways:[
+        "A few tail events drive the majority of results",
+        "Being wrong half the time is compatible with winning",
+        "Stay exposed: volume + survival = eventual tails"
+      ],
+      quiz:[
+        { q:"The Disney/Snow White example shows…",
+          o:["animation economics","one tail event can pay for hundreds of failures","first-mover advantage","brand power"],
+          a:1, why:"The overwhelming majority of output merely funded the wait for the outlier." },
+        { q:"For tail-driven domains, a high failure rate indicates…",
+          o:["poor strategy","normal, healthy exposure to outliers","insufficient research","bad luck"],
+          a:1, why:"If tails carry the returns, most attempts must 'fail' by definition." },
+        { q:"The two disciplines tails require are…",
+          o:["timing and leverage","volume of attempts and survival between them","secrecy and speed","focus and specialization"],
+          a:1, why:"You must keep producing attempts and remain solvent long enough for the outlier to land." }
+      ],
+      discussion:[
+        "What does 'tail exposure' look like for a creative career?",
+        "How do you emotionally metabolize a 90% failure rate?",
+        "Which of your current projects is a lottery ticket, and which is the rent?"
+      ],
+      assignment:"Audit your last 10 creative or financial 'bets.' Mark the one tail. Ask: what would doubling my volume of attempts cost — and what would it expose me to?",
+      journal:"Am I judging myself by my average output or my best output — and which one does the world actually pay for?"
+    },
+    { theme:"Freedom: The Highest Dividend", reading:"Chapters 10–11",
+      lecture:[
+        "The broadest common denominator of happiness research is control over one's life. Money's highest intrinsic dividend, Housel argues, is exactly that: the ability to wake up and say 'I can do whatever I want today.' Wealth that buys flashy things buys a depreciating signal; wealth that buys back your time buys the thing every human actually wants.",
+        "The chapter's sharpest irony: we use money to signal to others, but nobody is looking. The man in the car paradox — you see the Ferrari and imagine yourself in it, never admiring the driver. Signaling wealth transfers your money to strangers' imaginations.",
+        "Doing work you love on a schedule you can't control, research shows, feels the same as work you hate. Autonomy is not a luxury add-on to compensation; for wellbeing, it is the compensation."
+      ],
+      takeaways:[
+        "Money's real dividend is control over your time",
+        "Nobody admires the driver — signaling is a leaky bucket",
+        "Autonomy outweighs intensity of passion for wellbeing"
+      ],
+      quiz:[
+        { q:"Per Housel, the highest form of wealth is…",
+          o:["passive income","the ability to do what you want, when you want, with whom you want","early retirement","asset diversity"],
+          a:1, why:"Control over time is the universal dividend that actually correlates with happiness." },
+        { q:"The 'man in the car paradox' states…",
+          o:["cars depreciate instantly","people admire the object, not its owner","luxury signals competence","status is relative"],
+          a:1, why:"The signal you paid for is absorbed by observers imagining themselves — not admiring you." },
+        { q:"Loved work without schedule control tends to feel like…",
+          o:["a calling","hated work","play","flow"],
+          a:1, why:"Reactance: losing control over timing poisons even intrinsically enjoyable tasks." }
+      ],
+      discussion:[
+        "How much of your income currently purchases autonomy vs. signals?",
+        "Describe a time low pay with high control beat high pay with low control — or vice versa.",
+        "What would 'I can do whatever I want today' actually require, in dollars?"
+      ],
+      assignment:"Compute your rough 'freedom number': monthly cost of your real life × months of runway you'd need to feel free to say no. Just knowing it changes decisions.",
+      journal:"Who did I imagine was watching when I made my last big purchase?"
+    },
+    { theme:"Saving Without a Reason", reading:"Chapters 12–13",
+      lecture:[
+        "Conventional advice ties savings to goals — the house, the car, the retirement. Housel inverts this: the highest-value savings are the ones with no purpose yet, because they purchase options against a future that cannot be predicted. Savings without a spending goal is stored flexibility — the ability to take the better job at lower pay, survive the layoff, wait out the bad market, or seize the opportunity that arrives on no schedule.",
+        "Two levers make saving tractable. First, wealth is the gap between ego and income: past a point, savings rate is determined less by income than by how much status-spending you can decline (Week 3's comparison trap, again). Second, frugality's power is that it's fully in your control — returns aren't, income partly isn't, but the gap is yours.",
+        "Reframe: savings are not deferred consumption; they are purchased autonomy at a rate no market can take away."
+      ],
+      takeaways:[
+        "Purposeless savings buy options against an unknowable future",
+        "Wealth is what you don't see — the gap between ego and income",
+        "Savings rate is the variable most within your control"
+      ],
+      quiz:[
+        { q:"Housel argues you should save because…",
+          o:["retirement requires it","the future is unpredictable and options are valuable","interest rates reward it","spending is immoral"],
+          a:1, why:"Goal-less savings hedge the unknowable — flexibility is the return." },
+        { q:"'Wealth is what you don't see' means…",
+          o:["hidden bank accounts","wealth is income not spent — the invisible unspent gap","wealth is subjective","rich people hide assets"],
+          a:1, why:"The visible spending is anti-wealth; actual wealth is the accumulation you declined to display." },
+        { q:"Savings rate beats investment returns as a focus because…",
+          o:["returns are always low","savings rate is under your direct control","math favors it","taxes penalize returns"],
+          a:1, why:"You cannot will the market upward, but you can widen your own gap today." }
+      ],
+      discussion:[
+        "What option would six months of runway open for you right now?",
+        "Where does your ego most reliably tax your income?",
+        "Is extreme frugality freedom or fear?"
+      ],
+      assignment:"Find one recurring expense that is really a signal (Week 7). Cancel or downgrade it, and route the difference somewhere you can't casually reach.",
+      journal:"What future version of me will be grateful for money that today-me has no plans for?"
+    },
+    { theme:"Reasonable Beats Rational", reading:"Chapters 14–16",
+      lecture:[
+        "The mathematically optimal strategy you cannot stick with is inferior to the merely reasonable one you can. Housel's example: fevers are medically useful, yet we treat them because suffering-on-purpose is intolerable — investors likewise abandon 'optimal' strategies at the worst moments because the strategy ignored the human holding it. Minimizing future regret, not maximizing expected return, is what keeps people invested through the night.",
+        "Two supporting insights. History is the study of surprises: the biggest events — depressions, wars, 9/11, pandemics — were precisely the things no forecast contained, so plans must be robust to the unforecastable rather than optimized for the forecast. And 'you'll change': the person your plan serves in 20 years will want different things than you do now, so extreme plans (retire at 30! never retire!) carry hidden regret risk at both poles.",
+        "Aim for strategies you can sustain through fear, boredom, and personal change — sustainability is the hidden variable in every financial equation."
+      ],
+      takeaways:[
+        "A sustainable 'reasonable' beats an abandonable 'optimal'",
+        "History's biggest events were all surprises — plan for robustness",
+        "Your future self will want different things; avoid extremes"
+      ],
+      quiz:[
+        { q:"Reasonable beats rational because…",
+          o:["math is often wrong","strategies only work if humans can stick with them","emotion is information","optimization overfits"],
+          a:1, why:"The abandoned optimal strategy returns nothing; sustainability is part of the return." },
+        { q:"Housel treats history's biggest economic events as evidence that…",
+          o:["cycles repeat","the most consequential events are unforecastable surprises","regulation fails","progress is inevitable"],
+          a:1, why:"The record's lesson is not patterns but the reliability of shocks nobody predicted." },
+        { q:"The 'end of history illusion' warns that…",
+          o:["history is ending","we underestimate how much our future selves will change","progress stops","memory is unreliable"],
+          a:1, why:"People acknowledge past change but project a static future self — dangerous for long-horizon plans." }
+      ],
+      discussion:[
+        "What's a 'reasonable but suboptimal' choice you've made that outperformed by surviving?",
+        "How should surprise-robustness change a portfolio? A career?",
+        "What did you want ten years ago that you don't want now?"
+      ],
+      assignment:"Take one 'optimal' plan you keep failing at. Redesign it as the version you'd actually sustain for five years, even at 70% efficiency.",
+      journal:"Which of my current certainties would 10-years-from-now me smile at?"
+    },
+    { theme:"Pessimism's Seduction & Your Own Game", reading:"Chapters 17–20 + synthesis",
+      lecture:[
+        "Pessimism sounds smart; optimism sounds like a sales pitch. Housel's explanation: setbacks happen fast (crashes, layoffs) and progress happens slow (compounding, growth), so bad news is an event and good news is a statistic. Add loss aversion and evolutionary vigilance, and doom always finds an audience. But the historical base rate favors the long-run optimist — pessimism's seduction is a bias to be managed, not a signal to be traded.",
+        "The final tool: identify the game you're playing, and stop taking cues from people playing different ones. The day trader and the 30-year saver can both 'rationally' buy the same stock at wildly different prices — the danger is borrowing another player's moves. Bubbles, in this telling, are partly short-game logic bleeding into long-game players.",
+        "The capstone thesis of the course: define your game (your horizon, your enough, your freedom number), build room for error, stay exposed to tails, and let uninterrupted compounding — of money and of trust — do what it does. Then write it down, because unwritten philosophies dissolve under stress."
+      ],
+      takeaways:[
+        "Bad news is an event; good news is a statistic — adjust accordingly",
+        "Know which game you're playing; ignore other games' signals",
+        "A written money philosophy survives stress; vibes don't"
+      ],
+      quiz:[
+        { q:"Pessimism sounds smarter than optimism because…",
+          o:["it's usually correct","setbacks are fast and vivid while progress is slow and statistical","optimists exaggerate","media incentives"],
+          a:1, why:"Asymmetric speed and salience make doom persuasive regardless of base rates." },
+        { q:"'Know what game you're playing' warns against…",
+          o:["gambling","taking cues from investors with different time horizons","competitive careers","index funds"],
+          a:1, why:"A price rational for a day trader is madness for a 30-year saver — borrowed moves break your game." },
+        { q:"The course capstone asks you to combine…",
+          o:["maximum returns with minimum tax","enough + room for error + tail exposure + uninterrupted compounding","frugality with income growth","optimism with leverage"],
+          a:1, why:"The book's chapters converge into one personal system — written down, sized to your own game." }
+      ],
+      discussion:[
+        "Which pessimist do you find most convincing — and what's their track record?",
+        "What game are you actually playing with your money? Who are you accidentally copying?",
+        "What belongs in your written money philosophy that no advisor could tell you?"
+      ],
+      assignment:"Capstone: write your one-page money philosophy — your game, your enough, your freedom number, your buffers, your tail bets. Date it. Reread it in one year.",
+      journal:"If money could only ever buy me one thing from now on, what would I want it to be?"
+    }
+  ],
+  final:[
+    { q:"Housel's core thesis is that doing well with money depends mostly on…",
+      o:["intelligence","behavior","information","timing"], a:1,
+      why:"Soft skills beat technical skills: a genius who loses control of emotions is a financial disaster." },
+    { q:"'No one's crazy' because everyone's money model comes from…",
+      o:["their education","their own generation's and life's experiences","their income class","evolutionary instinct"], a:1,
+      why:"We generalize from radically different personal samples of the world." },
+    { q:"The Buffett lesson of Chapter 5 is that his true edge is…",
+      o:["stock picking","time in the market since childhood","insider access","leverage"], a:1,
+      why:"~99% of his wealth came after 50 — duration is the engine." },
+    { q:"Getting wealthy requires risk-taking; staying wealthy requires…",
+      o:["better returns","frugality and paranoia","diversification only","income growth"], a:1,
+      why:"Opposite temperaments: optimism to build, humility and buffers to keep." },
+    { q:"Tail events imply a healthy creative or investment portfolio will show…",
+      o:["consistent wins","a high failure rate with rare huge successes","steady small gains","low volatility"], a:1,
+      why:"A few outliers pay for everything; most attempts must fail." },
+    { q:"The highest dividend money pays is…",
+      o:["compound interest","control over your time","status","security"], a:1,
+      why:"Autonomy is the common denominator of happiness research." },
+    { q:"'Wealth is what you don't see' defines wealth as…",
+      o:["hidden luxury","income not spent","future income","credit capacity"], a:1,
+      why:"Visible spending is the opposite of wealth; the unspent gap is the asset." },
+    { q:"Save without a spending goal because…",
+      o:["goals limit ambition","the best opportunities and worst shocks arrive unannounced","interest compounds faster","budgets fail"], a:1,
+      why:"Purposeless savings are options on an unpredictable future." },
+    { q:"Reasonable beats rational because the optimal strategy…",
+      o:["is unknowable","fails if you can't emotionally sustain it","requires professionals","ignores taxes"], a:1,
+      why:"Sustainability through fear and boredom is part of the return." },
+    { q:"Bad news dominates headlines because…",
+      o:["media bias alone","setbacks are sudden events while progress is a slow statistic","pessimists are louder","good news is rare"], a:1,
+      why:"Speed asymmetry: crashes take days, compounding takes decades." },
+    { q:"The 'know your game' principle prevents…",
+      o:["all losses","taking price cues from players with different horizons","diversification errors","overconfidence"], a:1,
+      why:"Rational prices differ per game; borrowed moves wreck long-term players." },
+    { q:"The course's final deliverable is…",
+      o:["a portfolio","a dated, written personal money philosophy","a budget","a retirement date"], a:1,
+      why:"Unwritten philosophies dissolve under stress; the document is the system." }
+  ]
+},
+
+"educated": {
+  code: "MEM 310 · Memoir & Memory",
+  title: "The Making & Unmaking of a Self",
+  book: "Educated", author: "Tara Westover",
+  desc: "A ten-week seminar on Tara Westover's Educated, read as both memoir and argument. Raised by survivalists in the Idaho mountains and kept out of school, Westover walks into a classroom at seventeen and eventually out of Cambridge with a PhD — but the book's real subject is what an education costs. Because this is a memoir, our weeks track themes rather than chapters: memory, loyalty, violence, selfhood, and the unsettling question of who gets to tell a family's story.",
+  objectives: [
+    "Analyze memoir as a constructed, contestable act of memory",
+    "Trace the tension between family loyalty and self-invention",
+    "Evaluate education as both liberation and estrangement",
+    "Examine how Westover renders violence and gaslighting on the page",
+    "Interpret the role of place — Buck's Peak — as character",
+    "Compare competing accounts of shared events within the text",
+    "Assess what the memoir argues an 'education' actually is",
+    "Construct your own definition of a self-made mind"
+  ],
+  weeks: [
+    { theme:"Buck's Peak: A World Apart", reading:"Part One, opening chapters",
+      lecture:[
+        "The memoir opens not with school but with a mountain. Buck's Peak is rendered with the intimacy of scripture — the Indian Princess in the rock face, the junkyard, the root cellar of canned peaches — because for the first sixteen years of Westover's life, the mountain is the entire epistemic world. Her father's authority and the family's isolation aren't presented at first as deprivation; they're presented as a cosmos, coherent from inside. The book's genius is making the reader feel that coherence before dismantling it.",
+        "Note the narrative machinery already at work: the adult narrator writing over the child's perception, the footnotes flagging that others remember events differently. From page one, Educated announces itself as a book about the unreliability of the very medium it's made of — memory.",
+        "This week, read for world-building: what does the mountain make thinkable, and what does it make unthinkable?"
+      ],
+      takeaways:[
+        "The mountain functions as a total world, not a backdrop",
+        "The memoir flags its own memory problem from the start",
+        "Isolation is rendered as coherence before it's revealed as cage"
+      ],
+      quiz:[
+        { q:"Westover's footnotes acknowledging conflicting family memories serve to…",
+          o:["undermine her credibility","make the memoir's subject the instability of memory itself","satisfy legal review","pad the narrative"],
+          a:1, why:"By staging disagreement inside the text, she turns memoir into an argument about how stories get made." },
+        { q:"Buck's Peak operates in the memoir primarily as…",
+          o:["scenic setting","a character and a complete world of meaning","a symbol of poverty","an obstacle to escape"],
+          a:1, why:"The mountain defines what can be known and believed — it is the family's cosmos, not scenery." },
+        { q:"The early chapters present the family's isolation as…",
+          o:["obviously abusive","internally coherent and even beautiful","comic","politically motivated"],
+          a:1, why:"The reader is made to inhabit the logic before it is questioned — which is the book's central method." }
+      ],
+      discussion:[
+        "What 'mountain' — a total world that defined what was thinkable — did you grow up inside?",
+        "Why open a book about education with a place instead of a school?",
+        "Do the footnotes make you trust Westover more, or less?"
+      ],
+      assignment:"Write one page describing a place from your childhood with the same devotional detail Westover gives Buck's Peak — then add one footnote where someone else's memory would differ.",
+      journal:"What did my childhood world make unthinkable?"
+    },
+    { theme:"The Junkyard Gospel: Work, Danger & Belief", reading:"Part One, continued",
+      lecture:[
+        "The junkyard sequences — the shearing blade, the falls, the burns — are among the most harrowing in contemporary memoir, and Westover narrates them with an eerie flatness. That flatness is the point: inside the family's belief system, injuries are God's will, hospitals are corruption, and survival is proof of faith. Each escaped catastrophe strengthens the system that produced it.",
+        "Watch how belief metabolizes evidence. A car crash becomes a testimony; a burn treated with herbalism becomes a miracle of her mother's calling. The family's epistemology is self-sealing — no outcome can falsify it. This is the book's quiet horror, and it sets up the memoir's central question: how does a mind inside a self-sealing system ever get out?",
+        "The answer the book proposes — slowly, through cracks — begins with Tyler's quiet departures into books and music."
+      ],
+      takeaways:[
+        "Narrative flatness conveys normalized danger",
+        "Self-sealing belief systems convert every outcome into confirmation",
+        "The first cracks come through art and an older brother, not argument"
+      ],
+      quiz:[
+        { q:"Westover narrates the junkyard injuries flatly because…",
+          o:["she forgets details","inside the family's frame, catastrophe was ordinary and providential","editors cut the emotion","trauma blocks recall"],
+          a:1, why:"The style performs the family's normalization — horror presented as routine is the horror." },
+        { q:"The family's belief system is 'self-sealing' in that…",
+          o:["outsiders can't join","every outcome, good or bad, confirms it","it's written down","it forbids questions"],
+          a:1, why:"Survival proves faith; disaster proves persecution — nothing can count as counter-evidence." },
+        { q:"Tyler's role in this section is to…",
+          o:["rescue Tara physically","model that exit is possible, via books and music","confront the father","report the family"],
+          a:1, why:"His quiet study and departure for college crack open the possibility of another life." }
+      ],
+      discussion:[
+        "Where have you seen a self-sealing belief system — one no evidence could dent?",
+        "Is the flat narration more or less powerful than outrage would be?",
+        "Why does music, not argument, reach Tara first?"
+      ],
+      assignment:"Choose one scene of danger from this section and rewrite its final paragraph in an emotionally 'loud' style. Compare with Westover's version: what does each style claim about the event?",
+      journal:"Which inherited belief of mine has survived evidence against it?"
+    },
+    { theme:"First Classroom: Knowledge as Rupture", reading:"Part Two, BYU chapters",
+      lecture:[
+        "At seventeen, Westover sits in a lecture hall and raises her hand to ask what 'Holocaust' means. The scene is the memoir's hinge: education does not arrive as empowerment montage but as humiliation, vertigo, and grief. Every fact learned is simultaneously a discovery about the world and an indictment of home. This is the book's most original claim — that learning, for someone from a sealed world, is experienced as loss before it is experienced as gain.",
+        "Track the stages: first the raw gaps (history, hygiene, bureaucracy), then the harder unlearning — that her father's voice in her head is not the voice of God, that 'gentiles' take ibuprofen and survive, that her memories themselves may be edited. The bishop's gentle intervention and Dr. Kerry's 'you are not fool's gold' begin a counter-formation: authority figures who extend rather than confine her.",
+        "Education here is redefined: not information transfer, but the slow, painful acquisition of the right to trust one's own mind."
+      ],
+      takeaways:[
+        "Learning is experienced first as rupture and grief, not uplift",
+        "Unlearning home is harder than learning facts",
+        "Mentors function as a counter-family of extended trust"
+      ],
+      quiz:[
+        { q:"The Holocaust lecture scene matters because…",
+          o:["it shows academic rigor","a fact-gap becomes a revelation of her world's construction","it's her first failure","it introduces antisemitism as a theme"],
+          a:1, why:"The missing word exposes that her ignorance was manufactured — the world had been curated for her." },
+        { q:"Westover's claim about education-as-loss means…",
+          o:["tuition costs","every new fact estranges her further from home","grades are punishing","knowledge fades"],
+          a:1, why:"Each discovery doubles as an indictment of Buck's Peak — gain and grief arrive together." },
+        { q:"Dr. Kerry's 'fool's gold' remark functions as…",
+          o:["criticism","a counter-voice granting her permission to belong","irony","a warning about Cambridge"],
+          a:1, why:"He names her self-doubt as false — the beginning of borrowed, then owned, self-trust." }
+      ],
+      discussion:[
+        "What's something you had to unlearn, and what did unlearning cost you?",
+        "Is education always partly a betrayal of where you're from?",
+        "Who has been a 'Dr. Kerry' for you — and what exactly did they do?"
+      ],
+      assignment:"Write about your own 'Holocaust lecture moment' — a time a gap in your knowledge revealed something about how your world had been curated. One page.",
+      journal:"Whose voice still plays in my head as the voice of truth — and did I choose it?"
+    },
+    { theme:"Shawn: Violence, Gaslight & the Edited Past", reading:"Parts Two–Three, Shawn chapters",
+      lecture:[
+        "The memoir's darkest thread is Shawn — charismatic, protective, and viciously abusive, sometimes within the same hour. Westover renders the abuse with documentary precision (the wrist twisted in the parking lot, 'Fish Eyes,' the toilet) and then renders something worse: the family's machinery for erasing it. Her mother witnesses and later denies; her father demands proof, then reframes the demand itself as evidence of Tara's corruption. The word for this — gaslighting — is never used; the book instead makes you live inside it.",
+        "Formally, this is where the footnotes earn their weight: Westover shows her journal entries contradicting her own later memories, dramatizing how abuse destabilizes the record. When your memory is the only court and your family is the appeals judge, what you know becomes negotiable.",
+        "This week is heavy. The reading question is craft: how does Westover document the undocumentable without asking for the reader's pity?"
+      ],
+      takeaways:[
+        "Abuse is paired with the family's system for unwriting it",
+        "The journals dramatize memory as a contested archive",
+        "The craft achievement: testimony without self-pity"
+      ],
+      quiz:[
+        { q:"The family's response to Tara's account of Shawn is best described as…",
+          o:["denial and reality-revision that isolates the witness","immediate intervention","neutral mediation","private acknowledgment"],
+          a:0, why:"Witnessed events are denied and Tara herself is reframed as the threat — textbook gaslighting, enacted rather than named." },
+        { q:"Westover includes her own contradictory journal entries to…",
+          o:["admit dishonesty","show how abuse corrodes even the victim's record of events","fill gaps","protect Shawn legally"],
+          a:1, why:"The unstable archive is the point: trauma attacks the evidence of itself." },
+        { q:"The memoir avoids reader pity primarily through…",
+          o:["humor","precise, unadorned documentation over emotional appeal","skipping the worst events","distancing third person"],
+          a:1, why:"Specificity does the work; the reader supplies the horror the prose withholds." }
+      ],
+      discussion:[
+        "Why do families protect abusers? What does the book suggest beyond individual blame?",
+        "Can there be an authoritative account of a contested family event? Who arbitrates?",
+        "How does Westover keep Shawn human without excusing him — and should she?"
+      ],
+      assignment:"Analytical exercise: choose one Shawn scene and map its three tellings — the event, the family's retelling, the footnoted doubt. What does each version protect?",
+      journal:"Where in my life have I let someone else's version of events overwrite my own?"
+    },
+    { theme:"Cambridge: The Impostor & the Historian", reading:"Part Three",
+      lecture:[
+        "Cambridge gives the memoir its title's second meaning. Under Professor Steinberg's supervision, Westover stops being a student of facts and becomes a historian — someone who studies how accounts get made, whose voices count, and how 'great men' curate the record. The discipline she chooses is not incidental: historiography is the formal study of her own family problem.",
+        "Meanwhile the impostor feeling peaks — the gap between the Idaho junkyard and King's College chapel is rendered in clothes, accents, and the recurring fear of being found out. Steinberg's verdict ('that is one of the best essays I've read') vs. her instinct to disbelieve it stages the central war: the borrowed judgment of mentors against the installed judgment of home.",
+        "Watch the memoir argue that impostor syndrome, for the class-crossing student, is not a bug of psychology but an accurate perception of distance — one that must be outgrown anyway."
+      ],
+      takeaways:[
+        "Historiography is the theory of her own family's problem",
+        "Impostor feeling maps real distance, yet must be outgrown",
+        "Mentorship supplies judgment until self-trust can replace it"
+      ],
+      quiz:[
+        { q:"Westover's choice of historiography matters because…",
+          o:["it was prestigious","it formally studies how records and truth get constructed — her family's dynamic at scale","it required no math","it pleased Steinberg"],
+          a:1, why:"Her scholarly question and her personal question are the same: who authors the past?" },
+        { q:"The memoir frames her impostor syndrome as…",
+          o:["clinical anxiety","a partly accurate perception of crossed distance that she must still move beyond","vanity","a permanent condition"],
+          a:1, why:"The distance is real; the verdict of unworthiness drawn from it is not." },
+        { q:"Steinberg's praise functions like…",
+          o:["flattery","external evidence recruited against the internal verdict of home","a plot device","academic politics"],
+          a:1, why:"Like Dr. Kerry, he lends her a judgment of herself she cannot yet generate." }
+      ],
+      discussion:[
+        "Is impostor syndrome ever 'correct'? What follows from saying yes?",
+        "What discipline or craft is secretly the theory of your own life?",
+        "When did borrowed confidence become your own — if it has?"
+      ],
+      assignment:"Short essay (one page): pick an event from your family's shared history and write its 'historiography' — who tells it, who benefits from each telling, what the record omits.",
+      journal:"Whose praise do I still not believe — and whose verdict am I defending by not believing it?"
+    },
+    { theme:"The Price: Estrangement", reading:"Part Three, continued",
+      lecture:[
+        "The confrontation finally comes — the parents' visit to Harvard, the offered 'blessing' that is really an ultimatum: renounce what you remember, or lose us. Westover's refusal costs her most of her family. The memoir refuses to soften this: there is no reconciliation arc, no redemptive Thanksgiving. The education is complete precisely when she can no longer be received by the world that made her.",
+        "Two craft choices deserve attention. First, the breakdown is shown honestly — the panic attacks, the failed PhD year, streaming TV in the fetal position — education does not immunize her against grief. Second, the loyal remainder: Tyler and Richard's partial support, her grandmother's funeral as a map of who will still stand near her. Estrangement, the book insists, is not clean; it is a permanent negotiation.",
+        "The question this week is the book's hardest: was it worth it? Westover's answer is yes — but the memoir's honesty is that she lets the cost remain fully visible next to the gain."
+      ],
+      takeaways:[
+        "The ultimatum makes memory itself the price of belonging",
+        "Breakdown is included — transformation isn't triumphal",
+        "Estrangement is ongoing negotiation, not a clean exit"
+      ],
+      quiz:[
+        { q:"The parents' 'blessing' at Harvard is really…",
+          o:["a peace offering","an ultimatum to trade her memory for membership","a religious ritual only","a misunderstanding"],
+          a:1, why:"Acceptance is conditioned on renouncing her account of events — belonging priced in memory." },
+        { q:"Including her breakdown year serves to…",
+          o:["gain sympathy","refuse the triumphal arc; education doesn't anesthetize loss","explain the PhD delay","criticize Harvard"],
+          a:1, why:"The honest cost accounting is what makes the final 'worth it' credible." },
+        { q:"The memoir presents estrangement as…",
+          o:["final and liberating","a permanent, unstable negotiation with partial allies","temporary","regretted"],
+          a:1, why:"Some siblings stand near, others don't; the border is redrawn continuously." }
+      ],
+      discussion:[
+        "Can a family's love be real and conditional at the same time?",
+        "What would you not trade for belonging?",
+        "Does the book earn its 'worth it' conclusion for you?"
+      ],
+      assignment:"Write the letter Tara could not send — or the one you haven't. It will not be shared. Note afterward, in two sentences, what writing it changed.",
+      journal:"What belonging in my life carries conditions I've stopped noticing?"
+    },
+    { theme:"Memory on Trial: The Memoir as Evidence", reading:"Full text, footnotes & author's note",
+      lecture:[
+        "Now we read Educated against itself. The family disputed the book publicly; her mother's memoir-length response exists; Westover's own footnotes concede divergent recollections. Rather than weakening the book, this week argues, the contest is the book: Educated stakes its authority not on perfect recall but on transparent method — showing its sources, flagging its doubts, distinguishing 'what I remember' from 'what happened.'",
+        "Compare this with the family's epistemology from Week 2: the self-sealing system admits no error and therefore cannot be trusted; the memoirist admits error constantly and therefore can. This inversion — credibility through confessed uncertainty — is the book's deepest lesson about knowledge, and it applies far beyond memoir: journalism, history, your own account of your life.",
+        "Method question for the week: what makes any first-person account trustworthy? Build your checklist from Westover's practice."
+      ],
+      takeaways:[
+        "The disputed record is the subject, not a flaw",
+        "Credibility flows from transparent method, not perfect memory",
+        "Confessed uncertainty inverts the family's infallible system"
+      ],
+      quiz:[
+        { q:"Westover's footnoted uncertainties ultimately…",
+          o:["weaken the legal case","ground her credibility in method rather than perfect recall","satisfy her editors","protect the family"],
+          a:1, why:"Showing where memory diverges is the practice that separates testimony from dogma." },
+        { q:"The contrast with her father's epistemology is that the memoir…",
+          o:["cites more scripture","admits it can be wrong — and is therefore trustworthy","is longer","avoids religion"],
+          a:1, why:"A system that can't err can't be trusted; one that confesses error can be checked." },
+        { q:"This week's transferable skill is…",
+          o:["speed reading","evaluating first-person accounts by their method of handling doubt","citation formatting","detecting lies"],
+          a:1, why:"The checklist — sources shown, doubts flagged, self vs. event distinguished — applies to any testimony." }
+      ],
+      discussion:[
+        "Does the family's public rebuttal change your reading? Should it?",
+        "Where is the line between a memoirist's truth and a family's privacy?",
+        "What would your own 'author's note' disclose about your reliability?"
+      ],
+      assignment:"Take a story you tell often about yourself. Annotate it with three honest footnotes: where memory is shaky, where others disagree, what you've smoothed. Read the annotated version aloud to yourself.",
+      journal:"Which of my own stories have I revised so many times the original is gone?"
+    },
+    { theme:"What Is an Education? The Book's Argument", reading:"Full text, synthesis",
+      lecture:[
+        "Strip the plot away and Educated makes a philosophical argument. An education is not credentials (she is careful to undercut the Cambridge-fairytale reading), not information (BYU's facts alone change little), and not escape (the mountain remains in her). The book's definition arrives in its final pages: the slow construction of a self that can weigh its inheritances and choose among them. 'You could call this selfhood many things. Transformation. Metamorphosis. Falsity. Betrayal. I call it an education.'",
+        "Note what this definition includes: the betrayals are inside it. Westover refuses the comfortable version where growth harms no one. To be educated, in this book, is to become someone your origins may not recognize — and to bear that.",
+        "As we approach the final, hold the course's three definitions side by side: the father's (education is contamination), the university's (education is achievement), and the book's (education is self-authorship with a price)."
+      ],
+      takeaways:[
+        "The book defines education as self-authorship, not credentials",
+        "The definition honestly includes betrayal and loss",
+        "Three rival definitions structure the whole memoir"
+      ],
+      quiz:[
+        { q:"Westover's final definition of education centers on…",
+          o:["degrees earned","the constructed ability to examine and choose among one's inheritances","economic mobility","religious freedom"],
+          a:1, why:"'I call it an education' names selfhood-through-choice, with its costs, as the real curriculum." },
+        { q:"The memoir undercuts the 'Cambridge fairytale' reading by…",
+          o:["criticizing professors","keeping the breakdown, estrangement, and permanent losses in frame","refusing the PhD","mocking academia"],
+          a:1, why:"The triumph is never allowed to erase its price — that refusal is the argument." },
+        { q:"The three competing definitions of education in the book belong to…",
+          o:["Tara, Tyler, Shawn","the father, the university, and the book itself","BYU, Cambridge, Harvard","mother, father, grandmother"],
+          a:1, why:"Contamination vs. achievement vs. self-authorship — the memoir adjudicates among them." }
+      ],
+      discussion:[
+        "Which of the three definitions of education did your schooling actually serve?",
+        "Can self-authorship avoid betrayal entirely? Name a case.",
+        "What inheritance have you examined and deliberately kept?"
+      ],
+      assignment:"Write your own one-paragraph definition of an education — it may not use the words 'school,' 'degree,' or 'knowledge.' Defend it with one example from your life and one from the book.",
+      journal:"What have I inherited that I am still deciding whether to keep?"
+    },
+    { theme:"Seminar: The Ethics of Telling", reading:"Selected reviews, the mother's rebuttal (excerpts), full text",
+      lecture:[
+        "A working seminar. The question on the table: what does a writer owe the people in her story? Positions to test — the family's (our privacy was taken), the memoirist's (my life is mine to tell), the reader's (we are owed honesty, not neutrality), and the historian's (contested accounts require method, not silence). Westover's practice supplies evidence for all four.",
+        "Extend the frame beyond memoir: social media testimony, family group chats, biographical journalism, your own storytelling about exes, parents, bosses. The tools from Week 7 (method, footnotes, confessed doubt) and Week 6 (the price of telling) now operate as an ethics.",
+        "There is no lecture conclusion this week by design. The seminar's output is your position paper — the assignment below — which doubles as your final-exam preparation."
+      ],
+      takeaways:[
+        "Four stakeholder claims compete over every told life",
+        "Method and confessed doubt function as narrative ethics",
+        "Your position paper is the week's real content"
+      ],
+      quiz:[
+        { q:"The seminar's four test positions belong to…",
+          o:["author, editor, critic, lawyer","family, memoirist, reader, historian","mother, father, Tara, Shawn","BYU, Cambridge, publisher, press"],
+          a:1, why:"Privacy, ownership, honesty, and method — each stakeholder holds one corner of the problem." },
+        { q:"The transferable claim of this week is that narrative ethics requires…",
+          o:["permission from all parties","transparent method and acknowledged cost, not silence","anonymization","neutrality"],
+          a:1, why:"The Westover model: tell, but show your work and keep the price visible." },
+        { q:"The week ends without a lecture conclusion because…",
+          o:["the topic is unresolved by design — the student's position paper is the conclusion","time constraints","the professor disagrees with the book","it's exam week"],
+          a:0, why:"Seminars produce positions, not verdicts; the syllabus assigns the verdict to you." }
+      ],
+      discussion:[
+        "Who in your life could write a memoir you'd dread? What would make their telling fair?",
+        "Is consent required to tell a true story? Whose?",
+        "Where is your personal line between testimony and exposure?"
+      ],
+      assignment:"Position paper (two pages): 'What a storyteller owes the people in the story.' Cite two scenes from Educated and one incident from your own narrating life.",
+      journal:"Whose story have I told without asking — and how would I want mine handled?"
+    },
+    { theme:"Capstone: The Self-Made Mind", reading:"Course synthesis",
+      lecture:[
+        "Final week. The course's throughline, assembled: a total world (W1) with a self-sealing system (W2) is cracked by rupture (W3), complicated by violence and erased records (W4), rebuilt through method and mentors (W5), paid for in belonging (W6), defended by transparent doubt (W7), defined as self-authorship (W8), and bounded by an ethics of telling (W9). What remains is the question the book leaves in your hands: what will you do with the authorship of your own account?",
+        "Westover ends not with victory but with a measurement: 'I am not the child my father raised, but he is the father who raised her.' The sentence holds both truths without resolving them — the memoir's final craft lesson. Selfhood, like history, is the discipline of holding contested accounts honestly.",
+        "The final exam covers the whole arc. The capstone essay — your own 'education' defined, narrated, and footnoted — is the course's true certificate."
+      ],
+      takeaways:[
+        "The ten weeks assemble one argument about self-authorship",
+        "The closing sentence models holding contradiction without resolution",
+        "Your footnoted self-narrative is the real credential"
+      ],
+      quiz:[
+        { q:"The closing line's power comes from…",
+          o:["forgiveness","holding two irreconcilable truths in one sentence without resolving them","poetic meter","ambiguity about events"],
+          a:1, why:"Both the break and the bond are affirmed — the book's method in miniature." },
+        { q:"The course's assembled argument is that a self-made mind requires…",
+          o:["leaving home","rupture, method, paid costs, and honest authorship of one's account","forgetting the past","institutional validation"],
+          a:1, why:"Each week supplied one component; none alone suffices." },
+        { q:"The capstone essay must include footnotes because…",
+          o:["academic formatting","confessed uncertainty is the course's standard of trustworthy self-narrative","citation ethics","length requirements"],
+          a:1, why:"Week 7's lesson becomes practice: your account earns trust by showing its seams." }
+      ],
+      discussion:[
+        "Which week's concept will you still be using in five years?",
+        "What does your version of 'I am not the child my father raised' sound like?",
+        "Has this book made you more or less likely to write about your own family?"
+      ],
+      assignment:"Capstone essay (three pages): narrate your own education — using the book's definition, not the credential one — with at least three honest footnotes. This is the course's certificate-earning work.",
+      journal:"Ten weeks from now, what account of myself do I want to be able to give?"
+    }
+  ],
+  final:[
+    { q:"Educated argues that an education is fundamentally…",
+      o:["a credential","the construction of a self that can examine and choose its inheritances","an escape from poverty","information acquisition"], a:1,
+      why:"'You could call this selfhood many things… I call it an education.'" },
+    { q:"The footnotes about conflicting memories function to…",
+      o:["hedge legally","ground the memoir's authority in transparent method","undermine the family","fill gaps"], a:1,
+      why:"Confessed uncertainty is the book's credibility engine." },
+    { q:"The family's belief system is dangerous chiefly because it is…",
+      o:["religious","self-sealing — no outcome can falsify it","rural","strict"], a:1,
+      why:"Survival proves faith; disaster proves persecution; exit becomes unthinkable." },
+    { q:"The Holocaust lecture scene reveals…",
+      o:["academic gatekeeping","that her ignorance was curated by her upbringing","her lack of ability","BYU's rigor"], a:1,
+      why:"The gap exposes the constructedness of her entire prior world." },
+    { q:"Learning, for Westover, initially feels like…",
+      o:["triumph","loss and estrangement","freedom","revenge"], a:1,
+      why:"Every fact gained doubles as an indictment of home — gain and grief together." },
+    { q:"The Shawn chapters pair violence with…",
+      o:["legal consequences","the family's machinery for denying and rewriting it","his redemption","Tara's revenge"], a:1,
+      why:"The gaslighting system, not only the abuse, is the subject." },
+    { q:"Her choice of historiography matters because it studies…",
+      o:["great men","how records are made and contested — her family problem at scale","ancient history","Mormon history only"], a:1,
+      why:"Her scholarship and her life pose the same question: who authors the past?" },
+    { q:"The Harvard 'blessing' scene prices family belonging in…",
+      o:["money","renounced memory","religious observance","geographic return"], a:1,
+      why:"She may stay only by trading her account of events for theirs." },
+    { q:"Including the breakdown year refuses which reading of the book?",
+      o:["the feminist reading","the triumphal Cambridge-fairytale reading","the religious reading","the political reading"], a:1,
+      why:"Education does not anesthetize its costs; the arc is not clean uplift." },
+    { q:"Week 9's seminar concludes that ethical telling requires…",
+      o:["family consent","transparent method with the price of telling kept visible","anonymization","neutrality"], a:1,
+      why:"Tell, show your work, keep the cost on the page." },
+    { q:"'I am not the child my father raised, but he is the father who raised her' models…",
+      o:["forgiveness","holding contradictory truths without resolution","estrangement's end","regret"], a:1,
+      why:"Both rupture and bond are held honestly — the memoir's method in one line." },
+    { q:"The course capstone requires footnotes in your self-narrative because…",
+      o:["style consistency","trustworthy accounts show their seams","grading fairness","academic convention"], a:1,
+      why:"The book's deepest lesson: credibility comes from confessed uncertainty." }
+  ]
+}
+};
+
+/* ── seminar edition for any unlisted book ── */
+function seminarCourse(title, author){
+  const t = title.trim(), a = (author||"").trim();
+  const by = a ? " by " + a : "";
+  return {
+    code: "LAB 100 · Seminar Edition", title: t + ": A Close Reading",
+    book: t, author: a || "the author", seminar: true,
+    desc: "A ten-week seminar built around " + t + by + ". Because this course was generated from your shelf, it runs in seminar mode: structured close reading, discussion prompts, self-testing, and applied assignments that turn one reading of the book into a full semester of study. Pace: one theme per week, one assignment per week, reflection journal throughout, capstone essay and self-designed final in week ten.",
+    objectives: [
+      "Summarize the book's central argument or narrative arc in one paragraph",
+      "Identify the three claims or turns the whole book depends on",
+      "Interrogate the strongest counter-argument to the book's thesis",
+      "Connect each section's ideas to one real situation in your life",
+      "Track the author's methods: evidence, story, structure, voice",
+      "Build a vocabulary of the book's key terms in your own words",
+      "Teach the core idea to another person in under five minutes",
+      "Produce a capstone essay judging what the book gets right and wrong"
+    ],
+    weeks: [
+      { theme:"The Terrain: What Is This Book Doing?", reading:"Opening chapters",
+        lecture:["First pass: establish what kind of object " + t + " is. Argument or story? Manifesto or map? Read the opening chapters asking only structural questions — what does the author promise, what problem is declared, and what would have to be true for this book to matter? Write the promise down; the whole semester tests whether it's kept."],
+        takeaways:["Name the book's promise in one sentence","Identify the declared problem","Note your starting expectations — you'll grade them later"],
+        discussion:["What is the author promising you?","Who is this book arguing against, even implicitly?","What do you already believe about this topic?"],
+        assignment:"Write the book's promise in one sentence and pin it somewhere you'll see it for ten weeks.",
+        journal:"Why this book, and why now, for me?" },
+      { theme:"The Load-Bearing Claim", reading:"Early-middle chapters",
+        lecture:["Every book has one claim that, if removed, collapses the rest. This week's work is finding it in " + t + ". Test candidates: for each big statement, ask 'if this were false, does the book survive?' The one that fails the test is your load-bearing claim. Restate it in your own words — if you can't, you haven't found it yet."],
+        takeaways:["Locate the claim the book cannot survive without","Restate it in your own words","Distinguish decoration from structure"],
+        discussion:["Which claim did you pick, and what falls if it falls?","What evidence does the author lean on hardest?","Where are you already resisting?"],
+        assignment:"Write the load-bearing claim on one line, and beneath it the two best pieces of support the book offers.",
+        journal:"Do I want this claim to be true? What does that want do to my reading?" },
+      { theme:"The Author's Method", reading:"Continue reading",
+        lecture:["Shift from what the book says to how it says it. Does " + t + " persuade with stories, data, authority, or beauty? Mark three passages that moved you and dissect the machinery: what did the author do, in order, to produce that effect? Method-reading is the fastest way to grow as a thinker and a writer — you're reverse-engineering the engine."],
+        takeaways:["Identify the persuasion engine: story, data, authority, or style","Dissect three passages that worked on you","Steal one technique for your own work"],
+        discussion:["Which passage moved you most, and what exactly did it?","Where does the method overreach?","What would this book be as a film, a talk, a thread?"],
+        assignment:"Rewrite one paragraph of the book in your own voice, keeping the method but changing the example.",
+        journal:"What technique from this book do I want to own?" },
+      { theme:"Pressure Test: The Best Objection", reading:"Middle chapters",
+        lecture:["A course is not a fan club. This week, build the strongest case against " + t + " — not a lazy dismissal, but the objection the author would fear. Where is the evidence thinnest? Whose experience does the frame exclude? What would a rival author say? Hold your objection to the same standard as the book: one claim, supported."],
+        takeaways:["Construct the objection the author would actually fear","Find the thinnest evidence in the book","Name whose perspective is missing"],
+        discussion:["What's your strongest objection?","Can the book absorb it, or does something break?","What would change your mind back?"],
+        assignment:"Write the one-paragraph 'prosecution brief' against the book's thesis. Steelman only.",
+        journal:"Where did I notice myself agreeing out of habit rather than conviction?" },
+      { theme:"Midterm Week: Teach It", reading:"Review, first half",
+        lecture:["The midterm for " + t + " is a teaching test, because explanation is the only honest measure of understanding. Prepare a five-minute explanation of the book's core for someone who'll never read it: the promise, the load-bearing claim, the best support, the best objection. Deliver it — to a friend, a camera, a voice memo. Where you stumble is exactly what to reread."],
+        takeaways:["Explanation is the honest test of understanding","Your stumbles are your syllabus for review","Compression forces judgment about what matters"],
+        discussion:["What survived compression to five minutes?","What did you cut — and was cutting it a verdict?","What question did your 'student' ask that you couldn't answer?"],
+        assignment:"Record the five-minute teach. Listen once. Write down the two weakest moments and reread those sections.",
+        journal:"What do I understand now that I only recognized while explaining?" },
+      { theme:"The Idea in the Wild", reading:"Later chapters",
+        lecture:["Theory earns nothing until it touches a real situation. Select one live circumstance in your life — a decision, a relationship, a project — and run it through the book's framework. Write what " + t + " prescribes, do the smallest real version of it this week, and log what actually happened. The gap between prescription and result is this course's primary data."],
+        takeaways:["Apply the framework to one live situation","Do the smallest real version, not the ideal one","Log prescription vs. result honestly"],
+        discussion:["What did you try, and what happened?","Where did reality push back on the book?","Is the framework wrong, or was the application?"],
+        assignment:"The field test: one applied action from the book's playbook, executed and written up in half a page.",
+        journal:"What did the book predict about my week — and was it right?" },
+      { theme:"Key Terms, Owned", reading:"Full text scan",
+        lecture:["Every serious book installs vocabulary. Sweep " + t + " for its ten most load-bearing terms — the words the author uses in a specific, non-dictionary way. Define each in your own words with one example from your life, not the book's. A term you can only define with the author's example is a term you're borrowing, not owning."],
+        takeaways:["Extract the ten load-bearing terms","Define each with your own example","Borrowed definitions signal shallow understanding"],
+        discussion:["Which term does the book most abuse or overextend?","Which term will you keep using in a year?","What term does the book need but lack?"],
+        assignment:"Build the ten-term glossary, each entry: author's meaning, your definition, your example.",
+        journal:"Which of these words was I already living by without a name for it?" },
+      { theme:"The Book Among Books", reading:"Outside: reviews, one rival text",
+        lecture:["No book is an island. Read two reviews of " + t + " (one warm, one hostile) and skim one rival treatment of the same territory. Where does this book sit in its conversation — ahead of it, behind it, or orthogonal? A book's real size only becomes visible next to its neighbors."],
+        takeaways:["Read one warm and one hostile review","Position the book within its conversation","Rivals reveal what this book uniquely owns — and lacks"],
+        discussion:["What did the hostile review see that you missed?","What does the rival book do better?","What does this book own that nothing else does?"],
+        assignment:"Write the 'shelf placement': three sentences on where this book sits among its neighbors and who should read it first.",
+        journal:"Has my opinion of the book moved since Week 1? What moved it?" },
+      { theme:"The Verdict Draft", reading:"Reread your notes, weeks 1–8",
+        lecture:["Assemble the case file: the promise (W1), the claim (W2), the method (W3), the objection (W4), the teach (W5), the field test (W6), the glossary (W7), the shelf (W8). Draft your verdict on " + t + ": what it gets right, what it gets wrong, and — the part most reviews skip — what it changed in you, if anything. The capstone essay next week is this draft, matured."],
+        takeaways:["Synthesize eight weeks of evidence into a position","A verdict includes what the book changed in you","Most opinions are Week 1 reactions; yours now isn't"],
+        discussion:["What's your verdict in one sentence?","What evidence from your own field test carries the most weight?","What would the author say back to you?"],
+        assignment:"One-page verdict draft: right, wrong, and changed-in-me, each supported.",
+        journal:"Am I judging the book the author wrote, or the one I wanted?" },
+      { theme:"Capstone: The Final Word", reading:"Course synthesis",
+        lecture:["Final week for " + t + ". Polish the verdict into a capstone essay and sit your self-designed final: ten questions you write for yourself covering the promise, the claim, the objection, and the field test — then answer them closed-book. The Lab's position: you haven't read a book until you can examine yourself on it. Certificate unlocks when the essay is done. Every book = one semester."],
+        takeaways:["The capstone essay is your certificate-earning work","Self-designed exams are the deepest review technique","A finished course beats ten started books"],
+        discussion:["What question would the author most want to ask you?","What will you actually retain in five years?","What book does this course demand you read next?"],
+        assignment:"Capstone: the finished verdict essay + your ten-question self-exam, taken closed-book.",
+        journal:"What did giving this book a semester give me that a weekend read never has?" }
+    ],
+    final:[
+      { q:"Seminar finals are self-designed. Your exam: state the book's promise from memory.", open:true,
+        why:"Week 1's pinned sentence — compare what you write now against it." },
+      { q:"State the load-bearing claim and the two best pieces of support.", open:true,
+        why:"Week 2's spine. If it's fuzzy, the course isn't finished." },
+      { q:"Deliver the strongest objection — and the author's best reply.", open:true,
+        why:"Weeks 4 and 9. An exam you can't fail hasn't tested you." },
+      { q:"Report your field test: prescription, action, result, verdict.", open:true,
+        why:"Week 6 is the only question the book itself can't answer for you." },
+      { q:"Your verdict, one paragraph: right, wrong, changed-in-me.", open:true,
+        why:"The capstone in miniature — this paragraph IS your certificate." }
+    ]
+  };
+}
+
+/* ══════════════ engine ══════════════ */
+const $ = id => document.getElementById(id);
+let course = null, weekIdx = 0;
+
+const views = ["lobby","generating","course","week","certificate"];
+function show(v){
+  views.forEach(x => $(x).classList.toggle("on", x === v));
+  $("restart").style.display = v === "lobby" ? "none" : "";
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+function lookup(title){
+  return DEMO_SHELF[title.trim().toLowerCase()] || null;
+}
+
+/* ── generate sequence ── */
+const TICKS = [
+  ["📖","Reading BOOK cover to cover"],
+  ["🗓️","Mapping it to a 10-week syllabus"],
+  ["📝","Writing lecture notes"],
+  ["❓","Building quizzes + answer keys"],
+  ["🎯","Drafting the final exam"],
+  ["🎓","Printing your certificate"]
+];
+const SMALLS = ["course engine warming up","professor mode: engaged","this is the fun part","almost office hours","sharpening pencils","cap + gown incoming"];
+
+function generate(title, author){
+  const t = title.trim();
+  if(!t){ $("book-in").focus(); return; }
+  course = lookup(t) || seminarCourse(t, author);
+  weekIdx = 0;
+
+  $("gen-book-line").textContent = course.book + (course.author && course.author !== "the author" ? " · " + course.author : "");
+  const list = $("ticklist");
+  list.innerHTML = "";
+  TICKS.forEach(([icon, label]) => {
+    const d = document.createElement("div");
+    d.className = "tick";
+    d.innerHTML = '<div class="box"><span>✓</span></div><div>' + icon + "  " + label.replace("BOOK", "<em>" + esc(course.book) + "</em>") + "</div>";
+    list.appendChild(d);
+  });
+  $("gen-bar-fill").style.width = "0%";
+  show("generating");
+
+  const params = new URLSearchParams(location.search);
+  const pace = params.get("g") === "slow" ? 1.6 : params.get("g") === "fast" ? 0.55 : 1;
+  const rows = [...list.children];
+  let i = 0;
+  function step(){
+    if(i > 0){ rows[i-1].classList.add("done"); }
+    if(i >= rows.length){
+      $("gen-bar-fill").style.width = "100%";
+      $("gen-small").textContent = "semester ready";
+      setTimeout(() => { buildCourse(); show("course"); }, 700 * pace);
+      return;
+    }
+    rows[i].classList.add("active");
+    $("gen-small").textContent = SMALLS[i];
+    $("gen-bar-fill").style.width = Math.round((i / rows.length) * 100) + "%";
+    i++;
+    setTimeout(step, (900 + Math.random() * 500) * pace);
+  }
+  setTimeout(step, 500 * pace);
+}
+
+function esc(s){ const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+/* ── course dashboard ── */
+function buildCourse(){
+  $("c-code").textContent = course.code;
+  $("c-title").textContent = course.title;
+  $("c-from").textContent = "Course generated from " + course.book + (course.author ? " by " + course.author : "");
+  $("c-desc").textContent = course.desc;
+  $("c-objectives").innerHTML = course.objectives.map(o => "<li>" + esc(o) + "</li>").join("");
+
+  const wk = $("c-weeks");
+  wk.innerHTML = "";
+  course.weeks.forEach((w, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = '<button class="week-card"><span class="week-num">WK ' + (i+1) + '</span><span class="week-title">' + esc(w.theme) + '<small>' + esc(w.reading) + '</small></span><span class="week-go">→</span></button>';
+    li.querySelector("button").onclick = () => openWeek(i);
+    wk.appendChild(li);
+  });
+  const fli = document.createElement("li");
+  fli.innerHTML = '<button class="week-card exam-card"><span class="week-num">🏁</span><span class="week-title">Final Exam<small>' + course.final.length + ' questions · covers the whole course</small></span><span class="week-go">→</span></button>';
+  fli.querySelector("button").onclick = () => openFinal();
+  wk.appendChild(fli);
+}
+
+/* ── week view ── */
+function quizHTML(qs){
+  return qs.map((item, n) => {
+    if(item.open){
+      return '<div class="q"><div class="prompt">' + (n+1) + ". " + esc(item.q) + '</div>' +
+        '<button class="reveal">Reveal note</button><div class="answer">' + esc(item.why) + "</div></div>";
+    }
+    const opts = item.o.map((o, j) => '<li data-j="' + j + '">' + String.fromCharCode(65+j) + ". " + esc(o) + "</li>").join("");
+    return '<div class="q" data-a="' + item.a + '"><div class="prompt">' + (n+1) + ". " + esc(item.q) + '</div><ul>' + opts + '</ul>' +
+      '<button class="reveal">Reveal answer</button>' +
+      '<div class="answer"><b>' + String.fromCharCode(65+item.a) + ".</b> " + esc(item.o[item.a]) + " — " + esc(item.why) + "</div></div>";
+  }).join("");
+}
+function wireQuiz(container){
+  container.querySelectorAll(".q").forEach(q => {
+    const btn = q.querySelector(".reveal");
+    btn.onclick = () => {
+      q.classList.add("revealed");
+      const a = q.getAttribute("data-a");
+      if(a !== null){ const li = q.querySelector('li[data-j="' + a + '"]'); if(li) li.classList.add("correct"); }
+    };
+  });
+}
+
+function openWeek(i){
+  weekIdx = i;
+  const w = course.weeks[i];
+  $("w-kicker").textContent = course.code + " · Week " + (i+1) + " of 10";
+  $("w-title").textContent = w.theme;
+  $("w-reading").textContent = "Reading: " + w.reading;
+  $("w-lecture").innerHTML = w.lecture.map(p => "<p>" + esc(p) + "</p>").join("");
+  $("w-takeaways").innerHTML = w.takeaways.map(t => "<li>" + esc(t) + "</li>").join("");
+  $("w-quiz-label").textContent = "Week " + (i+1) + " quiz — tap to reveal answers";
+  $("w-quiz").innerHTML = quizHTML(w.quiz || []);
+  wireQuiz($("w-quiz"));
+  $("w-discussion").innerHTML = w.discussion.map(d => "<li>" + esc(d) + "</li>").join("");
+  $("w-assign").textContent = w.assignment;
+  $("w-journal").textContent = "🪩 " + w.journal;
+  $("w-prev").style.visibility = i === 0 ? "hidden" : "visible";
+  $("w-next").textContent = i === course.weeks.length - 1 ? "Final Exam →" : "Next →";
+  show("week");
+}
+
+function openFinal(){
+  weekIdx = course.weeks.length;
+  $("w-kicker").textContent = course.code + " · Final Examination";
+  $("w-title").textContent = "Final Exam";
+  $("w-reading").textContent = course.book + " — comprehensive. Closed book. You've got this.";
+  $("w-lecture").innerHTML = "<p>Answer honestly before revealing. A course isn't complete until it has tested you — that's the whole point of the Lab.</p>";
+  $("w-takeaways").innerHTML = ["Passing = you can explain it, not just recognize it","Miss one? Revisit that week, then retake","Certificate unlocks on the other side"].map(t => "<li>" + t + "</li>").join("");
+  $("w-quiz-label").textContent = "Final exam — tap to reveal answers";
+  $("w-quiz").innerHTML = quizHTML(course.final);
+  wireQuiz($("w-quiz"));
+  $("w-discussion").innerHTML = ["Which question made you think longest?","What would you add as question " + (course.final.length + 1) + "?"].map(d => "<li>" + d + "</li>").join("");
+  $("w-assign").textContent = "Score yourself. 80%+ — collect your certificate. Below that: pick your two weakest weeks and give them one more evening each.";
+  $("w-journal").textContent = "🎓 One semester ago this was just a book on your list.";
+  $("w-prev").style.visibility = "visible";
+  $("w-next").textContent = "Certificate →";
+  show("week");
+}
+
+/* ── certificate ── */
+function openCert(){
+  $("cert-course").innerHTML = "<b>" + esc(course.title) + "</b><br><i>" + esc(course.code) + " · from " + esc(course.book) + (course.author ? " by " + esc(course.author) : "") + "</i>";
+  $("cert-date").textContent = new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" });
+  const saved = localStorage.getItem("booklab-name");
+  if(saved) $("cert-name").value = saved;
+  show("certificate");
+}
+
+/* ── wiring ── */
+$("generate").onclick = () => generate($("book-in").value, $("author-in").value);
+$("book-in").addEventListener("keydown", e => { if(e.key === "Enter") generate($("book-in").value, $("author-in").value); });
+$("author-in").addEventListener("keydown", e => { if(e.key === "Enter") generate($("book-in").value, $("author-in").value); });
+document.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  $("book-in").value = c.dataset.book; $("author-in").value = c.dataset.author;
+  generate(c.dataset.book, c.dataset.author);
+});
+$("restart").onclick = () => { show("lobby"); $("book-in").focus(); };
+$("to-cert").onclick = openCert;
+$("cert-back").onclick = () => show("course");
+$("cert-name").addEventListener("input", e => localStorage.setItem("booklab-name", e.target.value));
+$("w-dash").onclick = () => show("course");
+$("w-prev").onclick = () => { if(weekIdx === course.weeks.length) openWeek(course.weeks.length - 1); else if(weekIdx > 0) openWeek(weekIdx - 1); };
+$("w-next").onclick = () => {
+  if(weekIdx === course.weeks.length) openCert();
+  else if(weekIdx === course.weeks.length - 1) openFinal();
+  else openWeek(weekIdx + 1);
+};
+
+/* deep links: /booklab/?book=Atomic+Habits&author=James+Clear (&g=slow|fast for filming pace) */
+const qp = new URLSearchParams(location.search);
+if(qp.get("book")) generate(qp.get("book"), qp.get("author") || "");
+</script>
+</body>
+</html>

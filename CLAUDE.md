@@ -47,6 +47,12 @@ gracew-portf/
 │   ├── glazed-craze.html      # Slide 5 — Glazed Craze donut shop concept
 │   ├── pinkcore.html          # Slide 6 — PinkCore Pilates brand
 │   └── tony-rocks.html        # Slide 7 — Tony Rocks Hair redesign
+├── booklab/index.html         # The Book Lab — self-hosted demo app for the Gumroad
+│                              #   product (type a book → generate a 10-week course).
+│                              #   Demo shelf: Atomic Habits, The Psychology of Money,
+│                              #   Educated (full courses); any other title runs the
+│                              #   "seminar edition" template. ?book=X deep-links,
+│                              #   ?g=slow|fast paces the generate animation for filming.
 ├── css/style.css
 ├── js/main.js                # ?debug=1 hotspot calibration mode
 ├── images/                    # Renamed copies of the slide JPGs used on each page
