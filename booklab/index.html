@@ -193,7 +193,18 @@
   .q{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 18px}
   .q .prompt{font-weight:700;line-height:1.45;margin-bottom:10px}
   .q ul{list-style:none;display:grid;gap:6px;margin-bottom:12px}
-  .q ul li{padding:7px 12px;border:1px dashed var(--rule);border-radius:8px;font-size:.94rem;line-height:1.4}
+  .q ul li{padding:7px 12px;border:1px dashed var(--rule);border-radius:8px;font-size:.94rem;line-height:1.4;position:relative}
+  .q[data-a] ul li{cursor:pointer;padding-right:34px;transition:border-color .12s ease, background .12s ease, transform .12s ease}
+  .q[data-a]:not(.revealed) ul li:hover{border-color:var(--cherry);background:rgba(243,201,221,.28);transform:translateX(2px)}
+  .q.revealed ul li{cursor:default;transform:none}
+  .q ul li::after{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-weight:800}
+  .q.revealed li.correct::after{content:"✓";color:var(--cherry-bright)}
+  .q.revealed li.picked-wrong{border:1px solid var(--cherry-bright);background:rgba(185,28,48,.07)}
+  .q.revealed li.picked-wrong::after{content:"✗";color:var(--cherry-bright)}
+  .score-chip{
+    font-size:.68rem;font-weight:800;letter-spacing:.1em;color:var(--cherry);
+    background:var(--pink);border-radius:999px;padding:4px 11px;white-space:nowrap;
+  }
   .reveal{
     font-family:inherit;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
     border:1px solid var(--cherry);background:transparent;color:var(--cherry);border-radius:999px;padding:7px 15px;
@@ -335,7 +346,7 @@
     <div class="sec-label">Key takeaways</div>
     <div class="takeaways"><ol id="w-takeaways"></ol></div>
 
-    <div class="sec-label" id="w-quiz-label">Quiz — tap to reveal answers</div>
+    <div class="sec-label"><span id="w-quiz-label">Quiz — click an answer</span><span class="score-chip" id="w-score" style="display:none"></span></div>
     <div class="quiz" id="w-quiz"></div>
 
     <div class="sec-label">Discussion</div>
@@ -1664,18 +1675,38 @@ function quizHTML(qs){
     }
     const opts = item.o.map((o, j) => '<li data-j="' + j + '">' + String.fromCharCode(65+j) + ". " + esc(o) + "</li>").join("");
     return '<div class="q" data-a="' + item.a + '"><div class="prompt">' + (n+1) + ". " + esc(item.q) + '</div><ul>' + opts + '</ul>' +
-      '<button class="reveal">Reveal answer</button>' +
+      '<button class="reveal">Skip to answer</button>' +
       '<div class="answer"><b>' + String.fromCharCode(65+item.a) + ".</b> " + esc(item.o[item.a]) + " — " + esc(item.why) + "</div></div>";
   }).join("");
 }
 function wireQuiz(container){
+  const graded = container.querySelectorAll(".q[data-a]");
+  let answered = 0, right = 0;
+  const chip = document.getElementById("w-score");
+  function updateChip(){
+    if(!chip) return;
+    chip.textContent = answered ? "score " + right + "/" + graded.length : "";
+    chip.style.display = answered ? "" : "none";
+  }
+  updateChip();
   container.querySelectorAll(".q").forEach(q => {
-    const btn = q.querySelector(".reveal");
-    btn.onclick = () => {
+    const a = q.getAttribute("data-a");
+    function settle(pickedLi){
+      if(q.classList.contains("revealed")) return;
       q.classList.add("revealed");
-      const a = q.getAttribute("data-a");
-      if(a !== null){ const li = q.querySelector('li[data-j="' + a + '"]'); if(li) li.classList.add("correct"); }
-    };
+      if(a !== null){
+        const correctLi = q.querySelector('li[data-j="' + a + '"]');
+        if(correctLi) correctLi.classList.add("correct");
+        if(pickedLi){
+          answered++;
+          if(pickedLi === correctLi) right++;
+          else pickedLi.classList.add("picked-wrong");
+          updateChip();
+        }
+      }
+    }
+    q.querySelectorAll("ul li").forEach(li => { li.onclick = () => settle(li); });
+    q.querySelector(".reveal").onclick = () => settle(null);
   });
 }
 
@@ -1687,7 +1718,7 @@ function openWeek(i){
   $("w-reading").textContent = "Reading: " + w.reading;
   $("w-lecture").innerHTML = w.lecture.map(p => "<p>" + esc(p) + "</p>").join("");
   $("w-takeaways").innerHTML = w.takeaways.map(t => "<li>" + esc(t) + "</li>").join("");
-  $("w-quiz-label").textContent = "Week " + (i+1) + " quiz — tap to reveal answers";
+  $("w-quiz-label").textContent = "Week " + (i+1) + " quiz — click an answer";
   $("w-quiz").innerHTML = quizHTML(w.quiz || []);
   wireQuiz($("w-quiz"));
   $("w-discussion").innerHTML = w.discussion.map(d => "<li>" + esc(d) + "</li>").join("");
@@ -1705,7 +1736,7 @@ function openFinal(){
   $("w-reading").textContent = course.book + " — comprehensive. Closed book. You've got this.";
   $("w-lecture").innerHTML = "<p>Answer honestly before revealing. A course isn't complete until it has tested you — that's the whole point of the Lab.</p>";
   $("w-takeaways").innerHTML = ["Passing = you can explain it, not just recognize it","Miss one? Revisit that week, then retake","Certificate unlocks on the other side"].map(t => "<li>" + t + "</li>").join("");
-  $("w-quiz-label").textContent = "Final exam — tap to reveal answers";
+  $("w-quiz-label").textContent = "Final exam — click an answer";
   $("w-quiz").innerHTML = quizHTML(course.final);
   wireQuiz($("w-quiz"));
   $("w-discussion").innerHTML = ["Which question made you think longest?","What would you add as question " + (course.final.length + 1) + "?"].map(d => "<li>" + d + "</li>").join("");
