@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Book Lab — turn any book into a college course</title>
 <meta name="description" content="Type in any book. Get a 10-week college course — syllabus, lectures, quizzes, a final exam, and a certificate. By Grace Branding Co.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#f7f1e6;
@@ -24,7 +27,7 @@
   body{
     background:var(--paper);
     color:var(--ink);
-    font-family:Georgia,'Times New Roman',serif;
+    font-family:'Inter','Helvetica Neue',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
     min-height:100vh;
     background-image:radial-gradient(circle at 20% 0%, rgba(243,201,221,.35), transparent 45%),
                      radial-gradient(circle at 90% 90%, rgba(127,29,45,.08), transparent 40%);
@@ -47,8 +50,12 @@
     color:var(--ink-soft);cursor:pointer;white-space:nowrap;
   }
   .top-btn:hover{border-color:var(--cherry);color:var(--cherry)}
-  .topbar .crumb{white-space:nowrap}
-  @media(max-width:520px){.topbar .crumb{display:none}}
+  .top-tabs{display:flex;align-items:center;gap:8px}
+  a.top-btn{text-decoration:none;display:inline-block}
+  @media(max-width:520px){
+    .top-btn{padding:6px 9px;font-size:.6rem;letter-spacing:.06em}
+    .wordmark{font-size:.64rem;letter-spacing:.12em}
+  }
 
   /* ── views ── */
   .view{display:none;animation:fadein .45s ease}
@@ -60,7 +67,7 @@
   .masthead .over{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cherry-bright)}
   .masthead h1{
     font-size:clamp(2.6rem,9vw,4.4rem);line-height:1.02;margin:14px 0 16px;
-    font-weight:700;letter-spacing:-.01em;
+    font-weight:800;letter-spacing:-.03em;
   }
   .masthead h1 em{font-style:italic;color:var(--cherry)}
   .masthead .sub{font-size:1.05rem;color:var(--ink-soft);max-width:30em;margin:0 auto;line-height:1.55}
@@ -140,22 +147,30 @@
   .objectives li{padding:5px 0 5px 26px;position:relative;break-inside:avoid;font-size:.95rem}
   .objectives li::before{content:"✦";position:absolute;left:2px;color:var(--cherry-bright)}
 
-  .weeks{list-style:none;display:grid;gap:10px}
+  .weeks{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(min-width:560px){.weeks{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:720px){.weeks{grid-template-columns:repeat(4,1fr)}}
   .week-card{
-    display:flex;align-items:center;gap:16px;width:100%;text-align:left;cursor:pointer;
-    background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:15px 17px;
-    font-family:inherit;color:var(--ink);font-size:1rem;
+    aspect-ratio:1/1;width:100%;display:flex;flex-direction:column;justify-content:space-between;
+    align-items:flex-start;gap:8px;text-align:left;cursor:pointer;
+    background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:14px;
+    font-family:inherit;color:var(--ink);
     transition:transform .14s ease, border-color .14s ease, box-shadow .14s ease;
   }
-  .week-card:hover{transform:translateX(4px);border-color:var(--cherry);box-shadow:0 10px 26px -18px rgba(127,29,45,.5)}
+  .week-card:hover{transform:translateY(-3px);border-color:var(--cherry);box-shadow:0 14px 30px -18px rgba(127,29,45,.5)}
   .week-num{
-    flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
-    background:var(--pink);color:var(--cherry);font-weight:700;font-size:.8rem;letter-spacing:.02em;
+    display:inline-grid;place-items:center;border-radius:999px;padding:5px 11px;
+    background:var(--pink);color:var(--cherry);font-weight:800;font-size:.68rem;letter-spacing:.08em;
   }
-  .week-card.exam-card .week-num{background:var(--cherry);color:#fdf3f7}
-  .week-title{flex:1;line-height:1.35}
-  .week-title small{display:block;font-size:.76rem;color:var(--ink-soft);font-style:italic;margin-top:2px}
-  .week-go{color:var(--cherry-bright);font-size:1.1rem}
+  .week-title{flex:1;line-height:1.3;font-weight:600;font-size:.86rem;display:flex;align-items:center}
+  .week-foot{width:100%;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .week-foot small{font-size:.68rem;color:var(--ink-soft);font-style:italic;line-height:1.3}
+  .week-go{color:var(--cherry-bright);font-size:1rem;flex:none}
+  .week-card.exam-card{background:var(--cherry);border-color:var(--cherry);color:#fdf3f7}
+  .week-card.exam-card .week-num{background:rgba(253,243,247,.18);color:#fdf3f7}
+  .week-card.exam-card .week-foot small{color:rgba(253,243,247,.75)}
+  .week-card.exam-card .week-go{color:#fdf3f7}
+  .week-card.exam-card:hover{box-shadow:0 14px 30px -14px rgba(127,29,45,.8)}
 
   .dash-foot{margin-top:40px;text-align:center}
   .cert-btn{
@@ -240,8 +255,10 @@
 
   <header class="topbar">
     <a class="wordmark" href="/">grace<b>branding</b>co.</a>
-    <span class="crumb">The Book Lab</span>
-    <button class="top-btn" id="restart" style="display:none">New book</button>
+    <nav class="top-tabs">
+      <a class="top-btn" href="https://www.notion.so/8136cc3b613f82b5ba8b816a1a1ea414" target="_blank" rel="noopener">📖 Bookshelf ↗</a>
+      <button class="top-btn" id="restart" style="display:none">New book</button>
+    </nav>
   </header>
 
   <!-- ── LOBBY ── -->
@@ -1628,12 +1645,12 @@ function buildCourse(){
   wk.innerHTML = "";
   course.weeks.forEach((w, i) => {
     const li = document.createElement("li");
-    li.innerHTML = '<button class="week-card"><span class="week-num">WK ' + (i+1) + '</span><span class="week-title">' + esc(w.theme) + '<small>' + esc(w.reading) + '</small></span><span class="week-go">→</span></button>';
+    li.innerHTML = '<button class="week-card"><span class="week-num">WK ' + (i+1) + '</span><span class="week-title">' + esc(w.theme) + '</span><span class="week-foot"><small>' + esc(w.reading) + '</small><span class="week-go">→</span></span></button>';
     li.querySelector("button").onclick = () => openWeek(i);
     wk.appendChild(li);
   });
   const fli = document.createElement("li");
-  fli.innerHTML = '<button class="week-card exam-card"><span class="week-num">🏁</span><span class="week-title">Final Exam<small>' + course.final.length + ' questions · covers the whole course</small></span><span class="week-go">→</span></button>';
+  fli.innerHTML = '<button class="week-card exam-card"><span class="week-num">🏁 FINAL</span><span class="week-title">Final Exam</span><span class="week-foot"><small>' + course.final.length + ' questions · whole course</small><span class="week-go">→</span></span></button>';
   fli.querySelector("button").onclick = () => openFinal();
   wk.appendChild(fli);
 }
